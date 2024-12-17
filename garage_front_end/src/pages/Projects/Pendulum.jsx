@@ -45,7 +45,7 @@ let Pendulum = () => {
                 type="text"
                 value={simData}
                 onChange={(e) => setSimData(e.target.value)}
-                placeholder="Enter your sim data"
+                placeholder="Enter an int. The value doesn't matter for now."
             />
             <button onClick={sendData}>POST</button>
             {successfulPost && responseData && <div><h4>Started simulation with {JSON.stringify(responseData.simulation_steps, null, 2)} steps</h4></div>}

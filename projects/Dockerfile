@@ -40,14 +40,16 @@ RUN apt install -y curl
 WORKDIR /projects/
 COPY . .
 
+# Make virtual environment
+WORKDIR /projects/simulator
+RUN python3 -m venv /.venv_simulator
+ENV PYTHON_VENV=/.venv_simulator/bin/python3
+ENV PIP_VENV=/.venv_simulator/bin/pip
+RUN $PIP_VENV install matplotlib
+
 # Build simulator
 RUN bash /projects/simulator/installation_scripts/build_simulator.sh
 
 # Make bindings
-WORKDIR /projects/simulator
-RUN python3 -m venv /.venv_simulator  && \
-    python3 src/binder/setup.py bdist_wheel && \
+RUN python3 src/binder/setup.py bdist_wheel && \
     /.venv_simulator/bin/pip install dist/binder-0.0.1-cp312-cp312-linux_x86_64.whl
-ENV PYTHON_VENV=/.venv_simulator/bin/python3
-ENV PIP_VENV=/.venv_simulator/bin/pip
-RUN $PIP_VENV install matplotlib
