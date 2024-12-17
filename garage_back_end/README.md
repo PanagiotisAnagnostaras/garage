@@ -1,1 +1,0 @@
-https://medium.com/@codingwitharyan/introduction-to-django-for-backend-development-2db67768ee62
