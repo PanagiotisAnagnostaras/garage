@@ -1,0 +1,4 @@
+[submodule "projects/simulator/external/pybind11"]
+	path = projects/simulator/external/pybind11
+	url = https://github.com/pybind/pybind11.git
+	branch = stable

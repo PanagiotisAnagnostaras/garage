@@ -1,0 +1,35 @@
+/* Define styles for the link */
+.link-style {
+    color: #007bff; /* Blue color */
+    text-decoration: none; /* Remove underline */
+    font-weight: bold; /* Make text bold */
+  }
+  
+  /* Define styles for when the link is hovered over */
+  .link-style:hover {
+    text-decoration: underline; /* Add underline on hover */
+    color: #0056b3; /* Darker blue color */
+  }
+  
+  .h1 {
+    font-size: 40px;
+    background-image: linear-gradient(to bottom, #ff3300, #ff6600, #ffcc00, #ff6600, #ff3300);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: blink-gradient 1s linear infinite alternate;
+  }
+  
+  @keyframes blink-gradient {
+    0% { background-position: 0% 0%; }
+    100% { background-position: 100% 0%; }
+  }
+  
+  
+  @keyframes blink-gradient {
+    0% {
+      background-position: 0% 0%;
+    }
+    100% {
+      background-position: 0% 100%;
+    }
+  }

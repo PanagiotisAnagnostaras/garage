@@ -1,0 +1,10 @@
+{
+    "cSpell.words": [
+        "setpoint",
+        "timestep"
+    ],
+    "files.associations": {
+        "chrono": "cpp"
+    },
+    "cmake.sourceDirectory": "/home/panos/git_repos/garage/projects/simulator"
+}
