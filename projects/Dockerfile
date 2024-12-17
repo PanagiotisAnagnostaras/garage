@@ -36,20 +36,20 @@ RUN apt install -y libpistache-dev
 RUN apt install -y pkg-config
 RUN apt install -y curl
 
-# Mount src code
-WORKDIR /projects/
-COPY . .
-
 # Make virtual environment
-WORKDIR /projects/simulator
 RUN python3 -m venv /.venv_simulator
 ENV PYTHON_VENV=/.venv_simulator/bin/python3
 ENV PIP_VENV=/.venv_simulator/bin/pip
 RUN $PIP_VENV install matplotlib
 
+# Mount src code
+WORKDIR /projects/
+COPY . .
+
 # Build simulator
 RUN bash /projects/simulator/installation_scripts/build_simulator.sh
 
 # Make bindings
+WORKDIR /projects/simulator
 RUN python3 src/binder/setup.py bdist_wheel && \
     /.venv_simulator/bin/pip install dist/binder-0.0.1-cp312-cp312-linux_x86_64.whl
