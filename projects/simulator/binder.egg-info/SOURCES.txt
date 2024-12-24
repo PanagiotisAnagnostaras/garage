@@ -1,6 +1,0 @@
-binder.egg-info/PKG-INFO
-binder.egg-info/SOURCES.txt
-binder.egg-info/dependency_links.txt
-binder.egg-info/not-zip-safe
-binder.egg-info/requires.txt
-binder.egg-info/top_level.txt
