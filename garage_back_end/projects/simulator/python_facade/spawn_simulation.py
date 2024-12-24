@@ -18,7 +18,7 @@ class SimulationPy:
         self.time = 0
         self.plot_period_s = 0.1
 
-    def plot(self):
+    def run(self):
         fig, ax = plt.subplots(ncols=3, nrows=2)
         ax: List[List[plt.Axes]]
         fig: plt.Figure
@@ -120,7 +120,9 @@ class SimulationPy:
         plt.tight_layout()
         plt.show()
 
-
-if __name__ == "__main__":
+def run_simulation():
     sim_py = SimulationPy()
-    sim_py.plot()
+    sim_py.run()
+    
+if __name__ == "__main__":
+    run_simulation()

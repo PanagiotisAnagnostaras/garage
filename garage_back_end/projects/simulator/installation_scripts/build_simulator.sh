@@ -1,4 +1,4 @@
-rm -rf /projects/simulator/build/
-mkdir -p /projects/simulator/build/
-cmake -B /projects/simulator/build/ -S /projects/simulator/
-make -C /projects/simulator/build
+rm -rf /garage_back_end/projects/simulator/build/
+mkdir -p /garage_back_end/projects/simulator/build/
+cmake -B /garage_back_end/projects/simulator/build/ -S /garage_back_end/projects/simulator/
+make -C /garage_back_end/projects/simulator/build
