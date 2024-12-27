@@ -17,6 +17,7 @@ def simulation(request):
         serializer = SimulationSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            res = run_simulation(serializer.data)
+            print(serializer.data["simulation_steps"])
+            res = run_simulation(serializer.data["simulation_steps"])
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

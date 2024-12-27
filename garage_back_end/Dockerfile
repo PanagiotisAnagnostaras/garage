@@ -25,6 +25,7 @@ RUN apt-get update && \
         iputils-ping \
         cmake \
         python3-dev \
+        python3-tk \
     && apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
@@ -42,11 +43,13 @@ RUN $PIP_VENV install matplotlib \
                         numpy \
                         matplotlib \
                         pandas \
-                        tk 
+                        tk \
+                        setuptools
 
 # Build simulator
 RUN bash /garage_back_end/projects/simulator/installation_scripts/build_simulator.sh
 
-# # Make bindings
+# Make bindings
 WORKDIR /garage_back_end/projects/simulator
-RUN  ${PIP_VENV} install dist/binder-0.0.1-cp312-cp312-linux_x86_64.whl
+RUN ${PYTHON_VENV} src/binder/setup.py bdist_wheel
+RUN ${PIP_VENV} install dist/binder-0.0.1-cp312-cp312-linux_x86_64.whl
