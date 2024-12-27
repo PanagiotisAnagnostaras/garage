@@ -6,6 +6,9 @@ services:
     container_name: front_end_container
     environment:
     - WATCHPACK_POLLING=true
+    volumes:
+    - ./garage_front_end/src/:/garage_front_end/src/
+    - ./garage_front_end/public/:/garage_front_end/public/
     ports:
       - "3000:3000"
   
