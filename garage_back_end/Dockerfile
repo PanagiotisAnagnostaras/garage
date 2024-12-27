@@ -52,4 +52,4 @@ RUN bash /garage_back_end/projects/simulator/installation_scripts/build_simulato
 # Make bindings
 WORKDIR /garage_back_end/projects/simulator
 RUN ${PYTHON_VENV} src/binder/setup.py bdist_wheel
-RUN ${PIP_VENV} install dist/binder-0.0.1-cp312-cp312-linux_x86_64.whl
+RUN ${PIP_VENV} install dist/binder-0.0.1-cp312-cp312-linux_x86_64.whl --force-reinstall
