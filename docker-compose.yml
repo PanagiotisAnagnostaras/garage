@@ -13,22 +13,13 @@ services:
     tty: true
     image: back_end_image
     container_name: back_end_container
-    volumes:
-      - ./garage_back_end/:/garage_back_end/
-    ports:
-      - "4000:4000"
-
-  projects:
-    tty: true
-    image: projects_image
-    container_name: projects_container
     environment:
       - "DISPLAY=${DISPLAY}"
       - "QT_X11_NO_MITSHM=1"
     volumes:
-      - ./projects:/projects
-      - /projects/simulator/build
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ./garage_back_end/:/garage_back_end/
+      - /garage_back_end/projects/simulator/build
     ports:
-      - "8080:8080"
-    command: ["/projects/simulator/build/src/back-end-server/httpserver_run"]
+      - "4000:4000"
+    command: ["bash", "/garage_back_end/installation_scripts/run_back_end.sh"]   

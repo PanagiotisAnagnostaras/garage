@@ -4,7 +4,8 @@ from matplotlib import patches
 from typing import List
 import matplotlib.animation as animation
 import numpy
-
+import matplotlib
+import sys
 
 class SimulationPy:
     def __init__(self) -> None:
@@ -18,7 +19,8 @@ class SimulationPy:
         self.time = 0
         self.plot_period_s = 0.1
 
-    def plot(self):
+    def run(self, steps: int):
+        remaining_steps = steps
         fig, ax = plt.subplots(ncols=3, nrows=2)
         ax: List[List[plt.Axes]]
         fig: plt.Figure
@@ -95,7 +97,6 @@ class SimulationPy:
             pend_ang: float = self._sim.getPendAng()
             pend_vel: float = self._sim.getPendVel()
             input_signal: float = self._sim.getInput()
-            print(f"Time: {self.time}, Cart Position: {cart_pos}, Cart Velocity: {cart_vel}, Pendulum Angle: {pend_ang}, Pendulum Velocity: {pend_vel}, Input Signal: {input_signal}")
 
             self.time_data.append(self.time)
             self.cart_pos_data.append(cart_pos)
@@ -112,7 +113,12 @@ class SimulationPy:
 
             cart.set_xy((cart_pos-0.1, -0.1))
             pendulum.set_data(x=cart_pos, y=0, dx=numpy.sin(pend_ang), dy=numpy.cos(pend_ang))
-
+            nonlocal remaining_steps
+            remaining_steps -= 1
+            print(f"Remaining steps = {remaining_steps}/{steps}")
+            if remaining_steps ==0:
+                sys.exit()
+                                
             return line_cart_pos, line_cart_vel, line_pend_ang, line_pend_vel, line_input, line_animation
 
         ani = animation.FuncAnimation(fig, update, frames=1, init_func=init, blit=False, interval=1)
@@ -120,7 +126,10 @@ class SimulationPy:
         plt.tight_layout()
         plt.show()
 
-
-if __name__ == "__main__":
+def run_simulation(steps: int):
     sim_py = SimulationPy()
-    sim_py.plot()
+    sim_py.run(steps)
+    
+if __name__ == "__main__":
+    matplotlib.use('TkAgg')
+    run_simulation(100)

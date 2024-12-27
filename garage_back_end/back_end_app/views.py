@@ -4,7 +4,7 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Simulation
 from .serializers import SimulationSerializer
-from .simulator_wrapper.simulator_wrapper import run_simulation
+from projects.simulator.python_facade.spawn_simulation import run_simulation
 
 @api_view(['GET', 'POST'])
 def simulation(request):
@@ -17,6 +17,7 @@ def simulation(request):
         serializer = SimulationSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            res = run_simulation(serializer.data)
+            print(serializer.data["simulation_steps"])
+            res = run_simulation(serializer.data["simulation_steps"])
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

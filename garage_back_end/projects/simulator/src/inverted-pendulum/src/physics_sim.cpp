@@ -26,7 +26,6 @@ void PhysicSimulator::simulate() {
                            .count();
     if (duration_since_last_step >= (timestep_s_ * 1e6)) {
       input_mutex_.lock();
-      std::cout << "step  at = " << elapsed_time_ms_ / 1e6 << std::endl;
       step();
       updateBuffers();
       time_buffer_.push_back(elapsed_time_ms_ / 1e6);
