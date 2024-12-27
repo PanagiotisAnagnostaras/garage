@@ -22,4 +22,5 @@ services:
       - /garage_back_end/projects/simulator/build
     ports:
       - "4000:4000"
-    command: ["bash", "/garage_back_end/installation_scripts/run_back_end.sh"]   
+    # command: ["bash", "/garage_back_end/installation_scripts/run_back_end.sh"]   
+    command: ["sleep", "infinity"]   
