@@ -1,3 +1,3 @@
 #include "common_headers.h"
-bool is_unique_n_squared(std::string);
-bool is_unique(std::string);
+bool is_unique_1(std::string);
+bool is_unique_2(std::string);
