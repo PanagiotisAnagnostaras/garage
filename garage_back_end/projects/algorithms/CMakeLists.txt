@@ -9,6 +9,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(SOURCES
     src/main.cpp
     src/is_unique.cpp
+    src/check_permutations.cpp
+    src/urlfy.cpp
 )
 
 add_executable(main ${SOURCES})
