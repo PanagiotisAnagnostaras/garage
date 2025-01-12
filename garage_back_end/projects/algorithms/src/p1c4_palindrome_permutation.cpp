@@ -5,7 +5,7 @@ backwards. A permutation is a rearrangement of letters. The palindrome does not
 need to be limited to just dictionary words. EXAMPLE Input:Tact Coa Output:True
 (permutations: "taco cat", "atco eta", etc.)
 */
-#include "palindrome_permutation.h"
+#include "p1c4_palindrome_permutation.h"
 
 bool palindrome_permutation(std::string str) {
   std::unordered_map<char, int> count_map;

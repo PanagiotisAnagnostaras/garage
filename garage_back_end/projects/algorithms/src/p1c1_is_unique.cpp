@@ -1,6 +1,6 @@
 // Implement an algorithm to determine if a string has all unique characters.
 // What if you cannot use additional data structures.
-#include "is_unique.h"
+#include "p1c1_is_unique.h"
 
 // O(n^2)
 bool is_unique_1(std::string str) {

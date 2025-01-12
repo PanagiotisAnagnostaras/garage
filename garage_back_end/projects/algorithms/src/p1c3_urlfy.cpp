@@ -8,7 +8,7 @@ Input:"Mr John Smith    ",13
 Output:"Mr%20John%20Smith"
 */
 
-#include "urlfy.h"
+#include "p1c3_urlfy.h"
 
 // O(N)
 void replace_spaces(std::string &str){

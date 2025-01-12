@@ -1,12 +1,14 @@
-#include "check_permutations.h"
 #include "common_headers.h"
-#include "is_unique.h"
-#include "palindrome_permutation.h"
-#include "urlfy.h"
+#include "p1c1_is_unique.h"
+#include "p1c2_check_permutations.h"
+#include "p1c3_urlfy.h"
+#include "p1c4_palindrome_permutation.h"
 
 int main() {
   std::cout << "Hello from inside algorithms" << std::endl;
-  // is_unique
+
+  // Chapter 1: Arrays and Strings
+  // 1.1 is_unique
   std::cout << "--------------------------" << std::endl;
   std::cout << "Running is Unique" << std::endl;
   std::cout << "--------------------------" << std::endl;
@@ -14,7 +16,7 @@ int main() {
   std::cout << "yes: " << is_unique_2("yes") << std::endl;
   std::cout << "hello: " << is_unique_1("hello") << std::endl;
   std::cout << "hello: " << is_unique_2("hello") << std::endl;
-  // check_permutations
+  // 1.2 check_permutations
   std::cout << "--------------------------" << std::endl;
   std::cout << "Running check permutations" << std::endl;
   std::cout << "--------------------------" << std::endl;
@@ -23,7 +25,7 @@ int main() {
             << std::endl;
   std::cout << s1 << ", " << s3 << ": " << check_permutations_1(s1, s3)
             << std::endl;
-  // replace spaces
+  // 1.3 replace spaces
   std::cout << "--------------------------" << std::endl;
   std::cout << "Running replace spaces" << std::endl;
   std::cout << "--------------------------" << std::endl;
@@ -35,7 +37,7 @@ int main() {
   std::cout << "before: " << s5 << std::endl;
   replace_spaces(s5);
   std::cout << "after: " << s5 << std::endl;
-  // palindrome permutation
+  // 1.4 palindrome permutation
   std::cout << "--------------------------" << std::endl;
   std::cout << "Running palindrome permutation" << std::endl;
   std::cout << "--------------------------" << std::endl;
@@ -46,4 +48,6 @@ int main() {
   std::string s10{"ss"};
   std::cout << s10 << " is palindrome permutation:" << std::endl;
   std::cout << palindrome_permutation(s10) << std::endl;
+
+  // Chapter 2: Linked Lists
 }

@@ -8,10 +8,12 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 # Source files
 set(SOURCES
     src/main.cpp
-    src/is_unique.cpp
-    src/check_permutations.cpp
-    src/urlfy.cpp
-    src/palindrome_permutation.cpp
+    src/data_structures.cpp
+    src/p1c1_is_unique.cpp
+    src/p1c2_check_permutations.cpp
+    src/p1c3_urlfy.cpp
+    src/p1c4_palindrome_permutation.cpp
+    src/p2c1_remove_dups.cpp
 )
 
 add_executable(main ${SOURCES})

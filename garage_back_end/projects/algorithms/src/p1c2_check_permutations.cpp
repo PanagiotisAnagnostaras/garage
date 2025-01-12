@@ -1,5 +1,5 @@
 // Given two strings, write a method to determine if a one is a permutation of the other.
-#include "check_permutations.h"
+#include "p1c2_check_permutations.h"
 
 // O(NlogN)
 bool check_permutations_1(std::string str1, std::string str2){
