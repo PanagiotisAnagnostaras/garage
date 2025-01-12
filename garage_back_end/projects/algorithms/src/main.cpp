@@ -1,6 +1,7 @@
 #include "check_permutations.h"
 #include "common_headers.h"
 #include "is_unique.h"
+#include "palindrome_permutation.h"
 #include "urlfy.h"
 
 int main() {
@@ -34,4 +35,15 @@ int main() {
   std::cout << "before: " << s5 << std::endl;
   replace_spaces(s5);
   std::cout << "after: " << s5 << std::endl;
+  // palindrome permutation
+  std::cout << "--------------------------" << std::endl;
+  std::cout << "Running palindrome permutation" << std::endl;
+  std::cout << "--------------------------" << std::endl;
+  std::string s6{"dsasd"};
+  std::string s7{"dsasd "};
+  std::string s8{"asdsd"};
+  std::string s9{"assd"};
+  std::string s10{"ss"};
+  std::cout << s10 << " is palindrome permutation:" << std::endl;
+  std::cout << palindrome_permutation(s10) << std::endl;
 }

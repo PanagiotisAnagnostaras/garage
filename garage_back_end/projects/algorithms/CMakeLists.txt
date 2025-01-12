@@ -11,6 +11,7 @@ set(SOURCES
     src/is_unique.cpp
     src/check_permutations.cpp
     src/urlfy.cpp
+    src/palindrome_permutation.cpp
 )
 
 add_executable(main ${SOURCES})
