@@ -30,7 +30,6 @@ void replace_spaces(std::string &str){
             *move_to_it = '%';
             --move_to_it; 
         }
-        std::cout << str << std::endl;
     }
 
 }

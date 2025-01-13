@@ -14,6 +14,9 @@ set(SOURCES
     src/p1c3_urlfy.cpp
     src/p1c4_palindrome_permutation.cpp
     src/p2c1_remove_dups.cpp
+    src/p2c2_k_to_last.cpp
+    src/p2c3_delete_middle_node.cpp
+    src/p2c4_partition.cpp
 )
 
 add_executable(main ${SOURCES})
