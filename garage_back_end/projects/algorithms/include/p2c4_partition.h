@@ -1,3 +1,4 @@
 #include "common_headers.h"
 
-Node* make_partition(Node *header, int partition_value);
+template <typename T>
+LinkedListNode<T>* make_partition(LinkedListNode<T> *header, T partition_value);

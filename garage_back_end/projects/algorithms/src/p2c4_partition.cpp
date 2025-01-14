@@ -9,20 +9,21 @@ Output:3 -> 1 -> 2 -> 10 -> 5 -> 5 -> 8
 */
 #include "p2c4_partition.h"
 
-Node* make_partition(Node *header, int partition_value) {
-  Node *less_head = nullptr;
-  Node *less_tail = nullptr;
-  Node *more_head = nullptr;
-  Node *more_tail = nullptr;
-  Node *current = header;
+template <typename T>
+LinkedListNode<T>* make_partition(LinkedListNode<T> *header, T partition_value) {
+  LinkedListNode<T> *less_head = nullptr;
+  LinkedListNode<T> *less_tail = nullptr;
+  LinkedListNode<T> *more_head = nullptr;
+  LinkedListNode<T> *more_tail = nullptr;
+  LinkedListNode<T> *current = header;
   while (current != nullptr) {
-    Node *node = new Node(current->data_);
-    if (node->data_ < partition_value) {
+    LinkedListNode<T> *node = new LinkedListNode(current->data);
+    if (node->data < partition_value) {
       if (less_head == nullptr) {
         less_head = node;
         less_tail = node;
       } else {
-        less_tail->next_ = node;
+        less_tail->next = node;
         less_tail = node;
       }
     } else {
@@ -30,14 +31,14 @@ Node* make_partition(Node *header, int partition_value) {
         more_head = node;
         more_tail = node;
       } else {
-        more_tail->next_ = node;
+        more_tail->next = node;
         more_tail = node;
       }
     }
-    printLinkedList(more_head);
-    printLinkedList(less_head );
-    current = current->next_;
+    current = current->next;
   }
-  less_tail->next_=more_head;
+  less_tail->next=more_head;
   return less_head;
 }
+
+template LinkedListNode<int>* make_partition<int>(LinkedListNode<int>*, int);

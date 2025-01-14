@@ -3,23 +3,26 @@ Remove Dups: Write code to remove duplicates from an unsorted linked list.
 */
 #include "p2c1_remove_dups.h"
 
-void remove_dups(Node* head) {
-  std::unordered_map<int, int> count_map;
+template <typename T>
+void remove_dups(LinkedListNode<T>* head) {
+  std::unordered_map<T, int> count_map;
 
-  Node* current = head;
-  Node* previous = nullptr;
+  LinkedListNode<T>* current = head;
+  LinkedListNode<T>* previous = nullptr;
   while (current != nullptr) {
-    if (count_map.find(current->data_) == count_map.end()) {
+    if (count_map.find(current->data) == count_map.end()) {
       // not present
-      count_map[current->data_] = 1;
+      count_map[current->data] = 1;
       previous = current;
     } else {
       // present
-      previous->next_ = current->next_;
+      previous->next = current->next;
       delete current;
     }
     
-    current = previous->next_;
+    current = previous->next;
   }
   
 }
+
+template void remove_dups<int>(LinkedListNode<int>*);

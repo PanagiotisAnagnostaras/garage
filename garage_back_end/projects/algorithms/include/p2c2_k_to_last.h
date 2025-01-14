@@ -1,3 +1,4 @@
 #include "common_headers.h"
 
-int k_to_last(Node *head, int k);
+template <typename T>
+int k_to_last(LinkedListNode<T> *head, int k);

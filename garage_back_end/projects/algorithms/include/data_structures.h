@@ -1,12 +1,13 @@
-class Node {
+template<typename T>
+class LinkedListNode {
  public:
-  Node(int data);
-  Node(int data, Node* next);
-  static void printMe(Node *head);
-  int data_;
-  Node* next_;
+  LinkedListNode(T data);
+  LinkedListNode(T data, LinkedListNode* next);
+  static void printMe(LinkedListNode *head);
+  T data;
+  LinkedListNode* next;
 };
+template <typename T>
+void printLinkedList(LinkedListNode<T> *head);
 
-void printLinkedList(Node *head);
-
-Node* createLinkedList();
+LinkedListNode<int>* createLinkedList();

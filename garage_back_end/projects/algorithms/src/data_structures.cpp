@@ -2,27 +2,32 @@
 
 #include <iostream>
 
-Node::Node(int data) : data_(data) { next_ = nullptr; };
+template <typename T>
+LinkedListNode<T>::LinkedListNode(T data) : data(data) { next = nullptr; };
 
-Node::Node(int data, Node *next) : data_(data), next_(next) {};
+template <typename T>
+LinkedListNode<T>::LinkedListNode(T data, LinkedListNode *next) : data(data), next(next) {};
 
-void printLinkedList(Node *head) {
-  Node *curr = head;
+template <typename T>
+void printLinkedList(LinkedListNode<T> *head) {
+  LinkedListNode<T> *curr = head;
   while (curr != nullptr) {
-    std::cout << curr->data_ << " ";
-    curr = curr->next_;
+    std::cout << curr->data << " ";
+    curr = curr->next;
   }
   std::cout << std::endl;
 }
 
-Node *createLinkedList() {
+LinkedListNode<int> *createLinkedList() {
   // 12 -> 11 -> 12 -> 21 -> 41 -> 43 -> 21
-  Node *head = new Node(12);
-  head->next_ = new Node(11);
-  head->next_->next_ = new Node(12);
-  head->next_->next_->next_ = new Node(21);
-  head->next_->next_->next_->next_ = new Node(41);
-  head->next_->next_->next_->next_->next_ = new Node(43);
-  head->next_->next_->next_->next_->next_->next_ = new Node(21);
+  LinkedListNode<int> *head = new LinkedListNode(12);
+  head->next = new LinkedListNode(11);
+  head->next->next = new LinkedListNode(12);
+  head->next->next->next = new LinkedListNode(21);
+  head->next->next->next->next = new LinkedListNode(41);
+  head->next->next->next->next->next = new LinkedListNode(43);
+  head->next->next->next->next->next->next = new LinkedListNode(21);
   return head;
 }
+
+template void printLinkedList<int>(LinkedListNode<int>*);

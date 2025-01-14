@@ -10,9 +10,11 @@
 
 int main() {
   std::cout << std::endl;
+
   std::cout << "***************" << std::endl;
   std::cout << "Hello from inside algorithms" << std::endl;
   std::cout << "***************" << std::endl;
+
   // Chapter 1: Arrays and Strings
   // 1.1 is_unique
   std::cout << "--------------------------" << std::endl;
@@ -57,7 +59,7 @@ int main() {
 
   // Chapter 2: Linked Lists
   // Create a singly linked list:
-  Node* head = createLinkedList();
+  LinkedListNode<int>* head = createLinkedList();
   std::cout << "Example list:" << std::endl;
   printLinkedList(head);
   // 2.1 remove duplicate linked list
@@ -70,25 +72,32 @@ int main() {
   std::cout << "--------------------------" << std::endl;
   std::cout << "Return kth to last element linked list" << std::endl;
   std::cout << "--------------------------" << std::endl;
+  std::cout << "List " << std::endl;
+  printLinkedList(head);
   std::cout << "3 to last = " << k_to_last(head, 3) << std::endl;
   std::cout << "0 to last = " << k_to_last(head, 0) << std::endl;
   // 2.3 delete a node
   std::cout << "--------------------------" << std::endl;
-  std::cout << "Delete a Node" << std::endl;
+  std::cout << "Delete a LinkedListNode" << std::endl;
   std::cout << "--------------------------" << std::endl;
   std::cout << "List before:" << std::endl;
   printLinkedList(head);
-  std::cout << "Delete: " << head->next_->next_->data_ << std::endl; 
-  delete_node(head->next_->next_);
+  std::cout << "Delete: " << head->next->next->data << std::endl;
+  delete_node(head->next->next);
   std::cout << "List after:" << std::endl;
   printLinkedList(head);
   // 2.4 partition linked list
   std::cout << "--------------------------" << std::endl;
   std::cout << "Partition list" << std::endl;
   std::cout << "--------------------------" << std::endl;
-  Node *head_2 = createLinkedList();
-  printLinkedList(head_2);
-  head_2 = make_partition(head_2, 40);
-  printLinkedList(head_2);
+  LinkedListNode<int>* head_2 = createLinkedList();
+  std::cout << "List before" << std::endl;
+  printLinkedList<int>(head_2);
+  std::cout << "Partition at 40" << std::endl;
+  head_2 = make_partition<int>(head_2, 40);
+  std::cout << "List after" << std::endl;
+  printLinkedList<int>(head_2);
 
+  // Chapter 3: Stacks and Queues
+  // 3.1
 }
