@@ -7,6 +7,10 @@
 #include "p2c2_k_to_last.h"
 #include "p2c3_delete_middle_node.h"
 #include "p2c4_partition.h"
+#include "p8c1_triple_step.h"
+#include "p8c2_robot_in_grid.h"
+#include "p8c3_magic_index.h"
+#include "p8c5_recursive_multiply.h"
 
 int main() {
   std::cout << std::endl;
@@ -100,4 +104,66 @@ int main() {
 
   // Chapter 3: Stacks and Queues
   // 3.1
+
+  // Chapter 8: Recursion and Dynamic Programming
+  // 8.1
+  std::cout << "--------------------------" << std::endl;
+  std::cout << "Count Steps" << std::endl;
+  std::cout << "--------------------------" << std::endl;
+  int steps = 4;
+  std::cout << steps << " steps in " << count_ways_1(steps) << std::endl;
+  std::cout << steps << " steps in " << count_ways_2(steps) << std::endl;
+  // 8.2
+  std::cout << "--------------------------" << std::endl;
+  std::cout << "Robot in Grid" << std::endl;
+  std::cout << "--------------------------" << std::endl;
+  Maze maze = {{0, 0, 0, 0}, {0, 1, 1, 0}, {0, 1, 1, 0}, {0, 0, 0, 0}};
+  std::cout << "Maze: " << std::endl;
+  for (std::vector<bool> row : maze) {
+    std::cout << row[0] << " " << row[1] << " " << row[2] << " " << row[3]
+              << std::endl;
+  }
+  Path path = find_path(maze);
+  std::cout << "Path: " << std::endl;
+  for (Position pos : path) {
+    std::cout << pos[0] << " " << pos[1] << std::endl;
+  }
+  // 8.3
+  std::cout << "--------------------------" << std::endl;
+  std::cout << "Magic Index" << std::endl;
+  std::cout << "--------------------------" << std::endl;
+  std::vector<int> vec{-2, 0, 2, 5, 10, 12};
+  std::cout << "vector = " << std::endl;
+  std::for_each(vec.begin(), vec.end(), [](int i) { std::cout << i << " "; });
+  std::cout << std::endl;
+  std::cout << "magic index = " << find_magic_index_1(vec) << std::endl;
+  std::cout << "magic index = " << find_magic_index_2(vec) << std::endl;
+  // 8.5
+  std::cout << "--------------------------" << std::endl;
+  std::cout << "Recursive Multiply" << std::endl;
+  std::cout << "--------------------------" << std::endl;
+  int a = 3;
+  int b = 2;
+  std::cout << " a = " << a << " b = " << b << " axb = " << multiply_1(a, b)
+            << std::endl;
+  std::cout << " a = " << a << " b = " << b << " axb = " << multiply_2(a, b)
+            << std::endl;
+  a = -3;
+  b = -2;
+  std::cout << " a = " << a << " b = " << b << " axb = " << multiply_1(a, b)
+            << std::endl;
+  std::cout << " a = " << a << " b = " << b << " axb = " << multiply_2(a, b)
+            << std::endl;
+  a = 3;
+  b = -2;
+  std::cout << " a = " << a << " b = " << b << " axb = " << multiply_1(a, b)
+            << std::endl;
+  std::cout << " a = " << a << " b = " << b << " axb = " << multiply_2(a, b)
+            << std::endl;
+  a = -3;
+  b = 2;
+  std::cout << " a = " << a << " b = " << b << " axb = " << multiply_1(a, b)
+            << std::endl;
+  std::cout << " a = " << a << " b = " << b << " axb = " << multiply_2(a, b)
+            << std::endl;
 }

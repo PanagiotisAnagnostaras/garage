@@ -31,3 +31,13 @@ LinkedListNode<int> *createLinkedList() {
 }
 
 template void printLinkedList<int>(LinkedListNode<int>*);
+
+
+// template <typename T>
+// Stack<T>::Stack(LinkedListNode<T> top) : top(top){};
+
+// template <typename T>
+// bool Stack<T>::isEmpty(){return top==nullptr;}
+
+// template <typename T>
+// T Stack<T>::peek(return top->)
