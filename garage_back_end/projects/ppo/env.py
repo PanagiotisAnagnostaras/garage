@@ -19,16 +19,16 @@ class Env:
         return torch.tensor(obs)
     
     def apply_actions(self, actions: torch.Tensor) -> None:
-        self.sim.applyInput(actions.tolist())
+        self.sim.applyInput(0.0) # to fix this
         return
     
     def get_reward(self, observations: torch.Tensor, actions: torch.Tensor) -> torch.Tensor:
         rew = 0
-        rew += - torch.log(observations[2]) # theta -> 0
-        rew += - torch.log(observations[3]) # omega -> 0
-        return torch.rand(size=(1,))
+        rew += - torch.log(torch.abs(observations[2])+1) # theta -> 0
+        rew += - torch.log(torch.abs(observations[3])+1) # omega -> 0
+        return torch.tensor(rew)
     
     def step(self, actions: torch.Tensor) -> torch.Tensor:
         self.apply_actions(actions=actions)
-        self.sim.run(self.step_dt)
+        self.sim.run(self.step_dt, False)
         return self.get_observations()

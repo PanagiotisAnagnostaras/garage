@@ -6,35 +6,35 @@ from typing import List
 from torch.distributions import MultivariateNormal
 
 class PPO:
-    def __init__(self, env) -> None:
+    def __init__(self, env, steps_per_rollout, n_epochs, lr) -> None:
         self.env: Env = env
-        self._init_hyperparameters()
+        self._init_hyperparameters(steps_per_rollout, n_epochs, lr)
         self.actor = Actor(self.env.dimensions.observations_dims, self.env.dimensions.actions_dims)
         self.actor_opt = torch.optim.SGD(self.actor.parameters(), lr=self.learning_rate)
         self.critic = Critic(self.env.dimensions.observations_dims)
         self.critic_opt = torch.optim.SGD(self.critic.parameters(), lr=self.learning_rate)
 
     
-    def _init_hyperparameters(self) -> None:
-        self.steps_per_rollout = 10
-        self.max_timesteps_per_episode = 1600
+    def _init_hyperparameters(self, steps_per_rollout, n_epochs, lr) -> None:
+        self.steps_per_rollout = steps_per_rollout
         self.gamma = 0.95
         self.lambd = 0.5
-        self.n_epochs = 10
+        self.n_epochs = n_epochs
         self.epsilon = 0.2
-        self.learning_rate = 1e-3
+        self.learning_rate = lr
         cov_var = torch.full(size=(self.env.dimensions.actions_dims,), fill_value=0.5)
         self.cov_mat = torch.diag(cov_var)
 
     def train(self, total_training_steps):
         step = 0
         while step<total_training_steps:
+            print(f"-------------- training steps = {step+1}/{total_training_steps} --------------")
             obs, acts, rews, log_prob = self.rollout()
             advantages, rews2go = self.compute_advantages_and_rews2go(rews=rews, obs=obs)
             for epoch in range(self.n_epochs):
                 actor_loss = self.update_actor(log_prob_before=log_prob, obs=obs, advantages=advantages)
                 critic_loss = self.update_critic(obs=obs, rews2go=rews2go)
-                print(f"actor loss = {actor_loss} critic loss = {critic_loss}")
+                print(f"epoch: {epoch}/{self.n_epochs} actor loss = {actor_loss} critic loss = {critic_loss}")
             step+=1
     
     def rollout(self):
@@ -81,7 +81,7 @@ class PPO:
     
     def update_critic(self, obs: torch.Tensor, rews2go: torch.Tensor) -> None:
         predicted_V = self.read_value_function(obs=obs[:-1,:])
-        critic_loss: torch.Tensor = torch.nn.MSELoss()(predicted_V, rews2go.detach())
+        critic_loss: torch.Tensor = torch.nn.MSELoss()(predicted_V, rews2go.detach().unsqueeze(1))
         self.critic_opt.zero_grad()
         critic_loss.backward()
         self.critic_opt.step()

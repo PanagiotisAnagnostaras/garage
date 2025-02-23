@@ -12,29 +12,23 @@ PhysicSimulator::PhysicSimulator(float timestep_s, solver_type solver,
 }
 
 void PhysicSimulator::simulate(bool realtime) {
-  auto simulation_starts = std::chrono::high_resolution_clock::now();
+  uint32_t total_steps = horizon_s_ / timestep_s_;
+  uint32_t current_step = 0;
   auto last_step = std::chrono::high_resolution_clock::now();
-  auto horizon_microsec =
-      std::chrono::microseconds(static_cast<int>(horizon_s_ * 1e6)).count();
-  while (true) {
+  while (current_step < total_steps) {
     auto t = std::chrono::high_resolution_clock::now();
     auto duration_since_last_step =
         std::chrono::duration_cast<std::chrono::microseconds>(t - last_step)
             .count();
-    elapsed_time_ms_ = std::chrono::duration_cast<std::chrono::microseconds>(
-                           t - simulation_starts)
-                           .count();
-    if (duration_since_last_step >= (timestep_s_ * 1e6) && realtime || !realtime) {
+    if (duration_since_last_step >= (timestep_s_ * 1e6) && realtime ||
+        !realtime) {
       input_mutex_.lock();
       step();
       updateBuffers();
       time_buffer_.push_back(elapsed_time_ms_ / 1e6);
       last_step = std::chrono::high_resolution_clock::now();
+      current_step += 1;
       input_mutex_.unlock();
-    }
-    if (elapsed_time_ms_ > horizon_microsec) {
-      sim_is_over_ = true;
-      break;
     }
   }
   sim_is_over_ = true;
@@ -93,7 +87,7 @@ Vf PhysicSimulator::getState() { return state_; }
 
 float PhysicSimulator::getInput() { return input_; }
 
-void PhysicSimulator::applyInput(float v) {input_ = v;}
+void PhysicSimulator::applyInput(float v) { input_ = v; }
 
 void PhysicSimulator::setState(Vf state) { state_ = state; }
 
