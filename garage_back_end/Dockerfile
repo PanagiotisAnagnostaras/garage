@@ -36,15 +36,7 @@ COPY . .
 RUN python3 -m venv /.venv_simulator
 ENV PYTHON_VENV=/.venv_simulator/bin/python3
 ENV PIP_VENV=/.venv_simulator/bin/pip
-RUN $PIP_VENV install matplotlib \
-                        django \
-                        djangorestframework \
-                        django-cors-headers \
-                        numpy \
-                        matplotlib \
-                        pandas \
-                        tk \
-                        setuptools
+RUN $PIP_VENV install -r requirements.txt
 
 # Build simulator
 RUN bash /garage_back_end/projects/simulator/installation_scripts/build_simulator.sh
