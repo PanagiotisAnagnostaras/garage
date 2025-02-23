@@ -24,7 +24,7 @@ namespace physics_simulator
     {
     public:
         PhysicSimulator(float timestep_s = 1e-3, solver_type solver = solver_type::EXPLICIT_EULER, controller::PID pid = controller::PID(0, 0, 0, 10));
-        void simulate();
+        void simulate(bool realtime);
         void run_controller();
         float getCartPos();
         float getCartVel();
@@ -34,6 +34,7 @@ namespace physics_simulator
         void setHorizon(float horizon_s);
         bool isRunning();
         float getTime();
+        void applyInput(float input);
         
     private:       
         void initializeStates();

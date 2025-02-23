@@ -11,7 +11,7 @@ PhysicSimulator::PhysicSimulator(float timestep_s, solver_type solver,
   initializeStates();
 }
 
-void PhysicSimulator::simulate() {
+void PhysicSimulator::simulate(bool realtime) {
   auto simulation_starts = std::chrono::high_resolution_clock::now();
   auto last_step = std::chrono::high_resolution_clock::now();
   auto horizon_microsec =
@@ -24,7 +24,7 @@ void PhysicSimulator::simulate() {
     elapsed_time_ms_ = std::chrono::duration_cast<std::chrono::microseconds>(
                            t - simulation_starts)
                            .count();
-    if (duration_since_last_step >= (timestep_s_ * 1e6)) {
+    if (duration_since_last_step >= (timestep_s_ * 1e6) && realtime || !realtime) {
       input_mutex_.lock();
       step();
       updateBuffers();
@@ -92,6 +92,8 @@ void PhysicSimulator::updateBuffers() {
 Vf PhysicSimulator::getState() { return state_; }
 
 float PhysicSimulator::getInput() { return input_; }
+
+void PhysicSimulator::applyInput(float v) {input_ = v;}
 
 void PhysicSimulator::setState(Vf state) { state_ = state; }
 

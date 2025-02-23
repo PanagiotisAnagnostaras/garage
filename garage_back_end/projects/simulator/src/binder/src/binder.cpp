@@ -14,5 +14,6 @@ PYBIND11_MODULE(binder, m) {
         .def("getCartVel", &Simulation::getCartVel)
         .def("getPendAng", &Simulation::getPendAng)
         .def("getPendVel", &Simulation::getPendVel)
-        .def("getInput", &Simulation::getInput);
+        .def("getInput", &Simulation::getInput)
+        .def("applyInput", &Simulation::applyInput);
 }

@@ -8,7 +8,8 @@ class Simulation {
  public:
   Simulation();
   ~Simulation();
-  void run(float horizon);
+  void run(float horizon, bool realtime);
+  void applyInput(float input);
   float getTime();
   float getCartPos();
   float getCartVel();

@@ -1,5 +1,5 @@
 {
-    "cmake.sourceDirectory": "/garage_back_end/projects/algorithms",
+    "cmake.sourceDirectory": "/garage_back_end/projects/simulator",
     "files.associations": {
         "ostream": "cpp",
         "iostream": "cpp",
