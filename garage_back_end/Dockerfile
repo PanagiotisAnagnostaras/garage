@@ -38,10 +38,5 @@ ENV PYTHON_VENV=/.venv_simulator/bin/python3
 ENV PIP_VENV=/.venv_simulator/bin/pip
 RUN $PIP_VENV install -r requirements.txt
 
-# Build simulator
+# Build simulator and bindings
 RUN bash /garage_back_end/projects/simulator/installation_scripts/build_simulator.sh
-
-# Make bindings
-WORKDIR /garage_back_end/projects/simulator
-RUN ${PYTHON_VENV} src/binder/setup.py bdist_wheel
-RUN ${PIP_VENV} install dist/binder-0.0.1-cp312-cp312-linux_x86_64.whl --force-reinstall

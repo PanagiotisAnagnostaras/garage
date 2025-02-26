@@ -42,6 +42,7 @@ class PPO:
         acts = []
         rews = []
         log_probs = []
+        self.randomize_initial_state()
         s = self.env.get_observations()
         obs.append(s)
         for step in range(self.steps_per_rollout):
@@ -73,7 +74,7 @@ class PPO:
         ratio = torch.exp(log_prob - log_prob_before.detach())
         surr_clipped = torch.clamp(ratio, 1-self.epsilon, 1+self.epsilon) * advantages.detach()
         surr_unclipped = ratio * advantages.detach()
-        actor_loss = torch.min(surr_clipped, surr_unclipped).mean()
+        actor_loss = -torch.min(surr_clipped, surr_unclipped).mean()
         self.actor_opt.zero_grad()
         actor_loss.backward()
         self.actor_opt.step()
@@ -99,3 +100,9 @@ class PPO:
     
     def save(self) -> None:
         pass
+
+    def randomize_initial_state(self) -> None:
+        cart_vel = (torch.rand(size=(1,))*2-1) * self.env.constraints.max_cart_vel
+        pend_vel = (torch.rand(size=(1,))*2-1) * self.env.constraints.max_pend_vel
+        pend_pos = (torch.rand(size=(1,))*2-1) * torch.pi
+        self.env.set_state(cart_vel=cart_vel.item(), pend_vel=pend_vel.item(), pend_pos=pend_pos.item())

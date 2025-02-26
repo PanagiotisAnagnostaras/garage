@@ -30,6 +30,10 @@ namespace physics_simulator
         float getCartVel();
         float getPendAng();
         float getPendVel();
+        void setCartPos(float v);
+        void setCartVel(float v);
+        void setPendAng(float v);
+        void setPendVel(float v);
         float getInput();
         void setHorizon(float horizon_s);
         bool isRunning();
@@ -40,10 +44,6 @@ namespace physics_simulator
         void initializeStates();
         void step();
         void setState(Vf state);
-        void setCartPos(float v);
-        void setCartVel(float v);
-        void setPendAng(float v);
-        void setPendVel(float v);
         void computeDynamics();
         void addNoise(Vf noise);
         void updateBuffers();
