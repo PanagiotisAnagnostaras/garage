@@ -30,6 +30,7 @@ class PPO:
         while step<total_training_steps:
             print(f"-------------- training steps = {step+1}/{total_training_steps} --------------")
             obs, acts, rews, log_prob = self.rollout()
+            print
             advantages, rews2go = self.compute_advantages_and_rews2go(rews=rews, obs=obs)
             for epoch in range(self.n_epochs):
                 actor_loss = self.update_actor(log_prob_before=log_prob, obs=obs, advantages=advantages)
