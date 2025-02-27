@@ -90,7 +90,7 @@ class SimulationPy:
             return line_cart_pos, line_cart_vel, line_pend_ang, line_pend_vel, line_input, line_animation
 
         def update(frame):
-            self._sim.run(self.plot_period_s)
+            self._sim.run(self.plot_period_s, True)
             self.time += self._sim.getTime()
             cart_pos: float = self._sim.getCartPos()
             cart_vel: float = self._sim.getCartVel()
@@ -118,7 +118,6 @@ class SimulationPy:
             print(f"Remaining steps = {remaining_steps}/{steps}")
             if remaining_steps ==0:
                 sys.exit()
-                                
             return line_cart_pos, line_cart_vel, line_pend_ang, line_pend_vel, line_input, line_animation
 
         ani = animation.FuncAnimation(fig, update, frames=1, init_func=init, blit=False, interval=1)
