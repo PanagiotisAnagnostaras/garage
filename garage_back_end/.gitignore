@@ -1,6 +1,0 @@
-.vscode/
-back_end_app/__pycache__/
-back_end_app/migrations/__pycache__/
-back_end_server/__pycache__/
-build/
-db.sqlite3
