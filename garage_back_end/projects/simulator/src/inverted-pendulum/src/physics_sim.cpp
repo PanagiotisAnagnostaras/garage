@@ -61,8 +61,8 @@ void physics_simulator::PhysicSimulator::initializeStates() {
   }
   setCartPos(0);
   setCartVel(0);
-  setPendAng(0);
-  setPendVel(-3);
+  setPendAng(100);
+  setPendVel(0);
   input_ = 0;
   mass_cart_ = 1;
   mass_pendulum_ = 1;
