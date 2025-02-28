@@ -127,5 +127,5 @@ class PPO:
     def randomize_initial_state(self) -> None:
         cart_vel = (torch.rand(size=(1,))*2-1) * self.env.constraints.max_cart_vel
         pend_vel = (torch.rand(size=(1,))*2-1) * self.env.constraints.max_pend_vel
-        pend_pos = (torch.rand(size=(1,))*2-1) * torch.pi
+        pend_pos = (torch.rand(size=(1,))) * 2*torch.pi
         self.env.set_state(cart_vel=cart_vel.item(), pend_vel=pend_vel.item(), pend_pos=pend_pos.item())

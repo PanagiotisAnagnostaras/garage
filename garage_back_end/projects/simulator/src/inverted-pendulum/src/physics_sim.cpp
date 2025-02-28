@@ -25,9 +25,10 @@ void PhysicSimulator::simulate(bool realtime) {
       input_mutex_.lock();
       step();
       updateBuffers();
-      time_buffer_.push_back(elapsed_time_ms_ / 1e6);
       last_step = std::chrono::high_resolution_clock::now();
       current_step += 1;
+      elapsed_sim_time_s_ = current_step * timestep_s_;
+      time_buffer_.push_back(elapsed_sim_time_s_ / 1e6);
       input_mutex_.unlock();
     }
   }
@@ -60,8 +61,8 @@ void physics_simulator::PhysicSimulator::initializeStates() {
   }
   setCartPos(0);
   setCartVel(0);
-  setPendAng(1);
-  setPendVel(0);
+  setPendAng(0);
+  setPendVel(-3);
   input_ = 0;
   mass_cart_ = 1;
   mass_pendulum_ = 1;
@@ -73,13 +74,14 @@ void physics_simulator::PhysicSimulator::initializeStates() {
 void PhysicSimulator::step() {
   computeDynamics();
   state_ = solver_ptr_->step(f_, state_);
+  wrapToCircle();
 }
 
 void PhysicSimulator::updateBuffers() {
-  cart_pos_buffer_.push_back(state_[0]);
-  cart_vel_buffer_.push_back(state_[1]);
-  pend_ang_buffer_.push_back(state_[2]);
-  pend_vel_buffer_.push_back(state_[3]);
+  cart_pos_buffer_.push_back(state_[STATE_INDEX_CART_POS]);
+  cart_vel_buffer_.push_back(state_[STATE_INDEX_CART_VEL]);
+  pend_ang_buffer_.push_back(state_[STATE_INDEX_PEND_ANG]);
+  pend_vel_buffer_.push_back(state_[STATE_INDEX_PEND_VEL]);
   input_buffer_.push_back(input_);
 }
 
@@ -91,43 +93,50 @@ void PhysicSimulator::applyInput(float v) { input_ = v; }
 
 void PhysicSimulator::setState(Vf state) { state_ = state; }
 
-void PhysicSimulator::setCartPos(float v) { state_[0] = v; };
+void PhysicSimulator::setCartPos(float v) { state_[STATE_INDEX_CART_POS] = v; };
 
-void PhysicSimulator::setCartVel(float v) { state_[1] = v; };
+void PhysicSimulator::setCartVel(float v) { state_[STATE_INDEX_CART_VEL] = v; };
 
-void PhysicSimulator::setPendAng(float v) { state_[2] = v; };
+void PhysicSimulator::setPendAng(float v) { state_[STATE_INDEX_PEND_ANG] = v; };
 
-void PhysicSimulator::setPendVel(float v) { state_[3] = v; };
+void PhysicSimulator::setPendVel(float v) { state_[STATE_INDEX_PEND_VEL] = v; };
 
-float PhysicSimulator::getCartPos() { return state_.at(0); };
+float PhysicSimulator::getCartPos() { return state_.at(STATE_INDEX_CART_POS); };
 
-float PhysicSimulator::getCartVel() { return state_.at(1); };
+float PhysicSimulator::getCartVel() { return state_.at(STATE_INDEX_CART_VEL); };
 
-float PhysicSimulator::getPendAng() { return state_.at(2); };
+float PhysicSimulator::getPendAng() { return state_.at(STATE_INDEX_PEND_ANG); };
 
-float PhysicSimulator::getPendVel() { return state_.at(3); };
+float PhysicSimulator::getPendVel() { return state_.at(STATE_INDEX_PEND_VEL); };
 
-float PhysicSimulator::getTime() { return elapsed_time_ms_ / 1e6; };
+float PhysicSimulator::getTime() { return elapsed_sim_time_s_; };
 
 void PhysicSimulator::computeDynamics() {
-  f_[0] = state_[1];
-  f_[1] = (-pow(mass_pendulum_, 2) * pow(length_, 2) * g_ * cos(state_[2]) *
-               sin(state_[2]) +
-           (input_ +
-            mass_pendulum_ * length_ * pow(state_[3], 2) * sin(state_[2])) *
-               (inertia_ + mass_pendulum_ * pow(length_, 2))) /
-          ((inertia_ + mass_pendulum_ * pow(length_, 2)) *
-               (mass_cart_ + mass_pendulum_) -
-           pow(mass_pendulum_, 2) * pow(length_, 2) * pow(cos(state_[2]), 2));
-  f_[2] = state_[3];
-  f_[3] = ((mass_pendulum_ + mass_cart_) *
-               (mass_pendulum_ * g_ * length_ * sin(state_[2])) -
-           (input_ +
-            mass_pendulum_ * length_ * pow(state_[3], 2) * sin(state_[2])) *
-               mass_pendulum_ * length_ * cos(state_[2])) /
-          ((inertia_ + mass_pendulum_ * pow(length_, 2)) *
-               (mass_cart_ + mass_pendulum_) -
-           pow(mass_pendulum_, 2) * pow(length_, 2) * pow(cos(state_[2]), 2));
+  f_[STATE_INDEX_CART_POS] = state_[1];
+  f_[STATE_INDEX_CART_VEL] =
+      (-pow(mass_pendulum_, 2) * pow(length_, 2) * g_ *
+           cos(state_[STATE_INDEX_PEND_ANG]) *
+           sin(state_[STATE_INDEX_PEND_ANG]) +
+       (input_ + mass_pendulum_ * length_ *
+                     pow(state_[STATE_INDEX_PEND_VEL], 2) *
+                     sin(state_[STATE_INDEX_PEND_ANG])) *
+           (inertia_ + mass_pendulum_ * pow(length_, 2))) /
+      ((inertia_ + mass_pendulum_ * pow(length_, 2)) *
+           (mass_cart_ + mass_pendulum_) -
+       pow(mass_pendulum_, 2) * pow(length_, 2) *
+           pow(cos(state_[STATE_INDEX_PEND_ANG]), 2));
+  f_[STATE_INDEX_PEND_ANG] = state_[STATE_INDEX_PEND_VEL];
+  f_[STATE_INDEX_PEND_VEL] =
+      ((mass_pendulum_ + mass_cart_) *
+           (mass_pendulum_ * g_ * length_ * sin(state_[STATE_INDEX_PEND_ANG])) -
+       (input_ + mass_pendulum_ * length_ *
+                     pow(state_[STATE_INDEX_PEND_VEL], 2) *
+                     sin(state_[STATE_INDEX_PEND_ANG])) *
+           mass_pendulum_ * length_ * cos(state_[STATE_INDEX_PEND_ANG])) /
+      ((inertia_ + mass_pendulum_ * pow(length_, 2)) *
+           (mass_cart_ + mass_pendulum_) -
+       pow(mass_pendulum_, 2) * pow(length_, 2) *
+           pow(cos(state_[STATE_INDEX_PEND_ANG]), 2));
 }
 
 void PhysicSimulator::addNoise(Vf noise) { f_ = f_ + noise; }
@@ -135,4 +144,15 @@ void PhysicSimulator::addNoise(Vf noise) { f_ = f_ + noise; }
 void PhysicSimulator::setHorizon(float horizon) { horizon_s_ = horizon; }
 
 bool PhysicSimulator::isRunning() { return !sim_is_over_; }
+
+void PhysicSimulator::wrapToCircle() {
+  while (state_[STATE_INDEX_PEND_ANG] > 2 * PI) {
+    state_[STATE_INDEX_PEND_ANG] -= 2 * PI;
+  }
+
+  while (state_[STATE_INDEX_PEND_ANG] < 0) {
+    state_[STATE_INDEX_PEND_ANG] += 2 * PI;
+  }
+}
+
 }  // namespace physics_simulator

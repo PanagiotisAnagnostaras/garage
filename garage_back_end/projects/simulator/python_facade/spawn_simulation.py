@@ -97,6 +97,7 @@ class SimulationPy:
             pend_ang: float = self._sim.getPendAng()
             pend_vel: float = self._sim.getPendVel()
             input_signal: float = self._sim.getInput()
+            print(f"self.time = {self.time} cart_pos = {cart_pos} cart_vel = {cart_vel} pend_ang = {pend_ang} pend_vel = {pend_vel} input_signal = {input_signal}")
 
             self.time_data.append(self.time)
             self.cart_pos_data.append(cart_pos)
@@ -131,4 +132,4 @@ def run_simulation(steps: int):
     
 if __name__ == "__main__":
     matplotlib.use('TkAgg')
-    run_simulation(100)
+    run_simulation(10000)

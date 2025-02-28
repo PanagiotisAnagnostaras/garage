@@ -3,15 +3,16 @@ from dimensions import Dimensions
 from binder import Simulation
 from enum import Enum
 
-class Indexes(Enum):
+class ObsIndexes(Enum):
     CART_VEL = 0
     PEND_POS = 1
     PEND_VEL = 2
+    PREV_ACT = 3
 
 class Constraints:
-    max_cart_vel = 10
-    max_pend_vel = 10
-    max_input = 100
+    max_cart_vel = 0
+    max_pend_vel = 0
+    max_input = 20
     
 class Env:
     def __init__(self, actions_dim: int, observations_dim: int, step_dt: float) -> None:
@@ -27,9 +28,10 @@ class Env:
     
     def get_observations(self) -> torch.Tensor:
         obs = torch.zeros(size=(self.dimensions.observations_dims,))
-        obs[Indexes.CART_VEL.value] = self.sim.getCartVel()
-        obs[Indexes.PEND_POS.value] = self.sim.getPendAng() % (2*torch.pi)
-        obs[Indexes.PEND_VEL.value] = self.sim.getPendVel()
+        obs[ObsIndexes.CART_VEL.value] = self.sim.getCartVel()
+        obs[ObsIndexes.PEND_POS.value] = self.sim.getPendAng()
+        obs[ObsIndexes.PEND_VEL.value] = self.sim.getPendVel()
+        obs[ObsIndexes.PREV_ACT.value] = self.sim.getInput()
         return obs
     
     def apply_actions(self, actions: torch.Tensor) -> None:
@@ -39,7 +41,7 @@ class Env:
     
     def get_reward(self, observations: torch.Tensor, actions: torch.Tensor) -> torch.Tensor:
         rew = torch.tensor(data=0, dtype=torch.float)
-        rew += torch.exp(-(observations[Indexes.PEND_POS.value])**2/1)
+        rew += torch.exp(-(observations[ObsIndexes.PEND_POS.value])**2/1)
         return rew
     
     def step(self, actions: torch.Tensor) -> torch.Tensor:

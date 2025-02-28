@@ -41,12 +41,19 @@ namespace physics_simulator
         void applyInput(float input);
         
     private:       
+        static constexpr uint STATE_INDEX_CART_POS = 0;
+        static constexpr uint STATE_INDEX_CART_VEL = 1;
+        static constexpr uint STATE_INDEX_PEND_ANG = 2;
+        static constexpr uint STATE_INDEX_PEND_VEL = 3;
+        static constexpr float PI = 3.1415926;
+
         void initializeStates();
         void step();
         void setState(Vf state);
         void computeDynamics();
         void addNoise(Vf noise);
         void updateBuffers();
+        void wrapToCircle();
         Vf getState();
 
 
@@ -55,7 +62,7 @@ namespace physics_simulator
         Vf f_, state_;
         bool sim_is_over_;
         int number_of_steps_;
-        float input_, timestep_s_, horizon_s_, mass_cart_, mass_pendulum_, length_, g_, inertia_, elapsed_time_ms_;
+        float input_, timestep_s_, horizon_s_, mass_cart_, mass_pendulum_, length_, g_, inertia_, elapsed_sim_time_s_;
         solver_type solver_;
         std::shared_ptr<integrator::ExplicitEuler> solver_ptr_;
         std::vector<float> cart_pos_buffer_, cart_vel_buffer_, pend_ang_buffer_, pend_vel_buffer_, input_buffer_, time_buffer_;
