@@ -1,9 +1,9 @@
 import torch.torch_version
 from networks import Actor, Critic
 import torch
-from env import Env
-from typing import List
+from env import Env, ObsIndexes
 from torch.distributions import MultivariateNormal
+from matplotlib import pyplot as plt
 
 class PPO:
     def __init__(self, env, steps_per_rollout, n_epochs_per_training_step, n_rollouts_per_training_step, lr_actor, lr_critic) -> None:
@@ -38,6 +38,7 @@ class PPO:
             for rollout in range(self.n_rollouts_per_training_step):
                 # print(f"rollout {rollout+1}/{self.n_rollouts_per_training_step}")
                 obs, acts, rews, log_prob = self.rollout()
+                # self.plot_rollout(obs)
                 obs_buffer[rollout,:,:] = obs
                 acts_buffer[rollout,:,:] = acts
                 rews_buffer[rollout,:,:] = rews.unsqueeze(-1)
@@ -89,6 +90,7 @@ class PPO:
             rew2go = rews_buffer[:,step,:] + self.gamma * (rews2go[:, 0, :]) if len(rews2go)!=0 else rews_buffer[:,step,:]
             rew2go = rew2go.unsqueeze(1)
             rews2go = torch.cat((rew2go, rews2go), dim=1) if rews2go.nelement()!=0 else rew2go
+        # normalize advantage to do
         return advantages, rews2go
             
     
@@ -115,7 +117,7 @@ class PPO:
         return self.critic(obs)
     
     def compute_actions(self, obs: torch.Tensor) -> torch.Tensor:
-        mean = self.actor(obs)
+        mean = self.actor(obs) * self.env.constraints.max_input
         dist = MultivariateNormal(mean, self.cov_mat)
         action = dist.sample()
         log_prob = dist.log_prob(action)
@@ -129,3 +131,16 @@ class PPO:
         pend_vel = (torch.rand(size=(1,))*2-1) * self.env.constraints.max_pend_vel
         pend_pos = (torch.rand(size=(1,))) * 2*torch.pi
         self.env.set_state(cart_vel=cart_vel.item(), pend_vel=pend_vel.item(), pend_pos=pend_pos.item())
+    
+    @staticmethod
+    def plot_rollout(obs):
+        fig, ax = plt.subplots(ncols=2, nrows=2)
+        ax[0][0].plot(obs[:, ObsIndexes.CART_VEL.value], label="cart vel")
+        ax[0][1].plot(obs[:, ObsIndexes.PEND_POS.value], label="pend pos")
+        ax[1][0].plot(obs[:, ObsIndexes.PEND_VEL.value], label="pend vel")
+        ax[1][1].plot(obs[:, ObsIndexes.PREV_ACT.value], label="prev act")
+        ax[0][0].legend()
+        ax[0][1].legend()
+        ax[1][0].legend()
+        ax[1][1].legend()
+        plt.show()

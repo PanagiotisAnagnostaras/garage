@@ -35,8 +35,7 @@ class Env:
         return obs
     
     def apply_actions(self, actions: torch.Tensor) -> None:
-        action_normalized = self.constraints.max_input* 1/(1+torch.exp(-actions)) - self.constraints.max_input/2
-        self.sim.applyInput(action_normalized.item())
+        self.sim.applyInput(actions.item())
         return
     
     def get_reward(self, observations: torch.Tensor, actions: torch.Tensor) -> torch.Tensor:

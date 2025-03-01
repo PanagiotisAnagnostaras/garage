@@ -1,6 +1,5 @@
 from torch import nn
-import torch
-from torch.distributions import MultivariateNormal
+
 
 class Actor(nn.Module):
     def __init__(self, obs_dim: int, act_dim: int) -> None:
@@ -10,7 +9,8 @@ class Actor(nn.Module):
             nn.ReLU(),
             nn.Linear(64, 64),
             nn.ReLU(),
-            nn.Linear(64, act_dim)
+            nn.Linear(64, act_dim),
+            nn.Tanh()
         )
         
     
