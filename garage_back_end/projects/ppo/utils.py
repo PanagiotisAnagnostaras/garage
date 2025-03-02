@@ -4,7 +4,7 @@ from env import Env
 from typing import List, Union
 from torch import Tensor
 
-def plot_rollout(obs: Union[List, Tensor]):
+def plot_rollout(obs: Tensor):
     fig, ax = plt.subplots(ncols=2, nrows=2)
     ax: List[List[Axes]]
     ax[0][0].plot(obs[:, Env.ObsIndexes.CART_VEL.value], label="cart vel")

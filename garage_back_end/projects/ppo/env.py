@@ -27,7 +27,7 @@ class Env:
         self.sim = Simulation()
         self.constraints = Env.Constraints()
 
-    def set_state(self, cart_vel: float, pend_pos: float, pend_vel: float, cart_pos=Union[None, float]):
+    def set_state(self, cart_vel: float, pend_pos: float, pend_vel: float, cart_pos: Union[None, float] = None):
         self.sim.setCartVel(cart_vel)
         self.sim.setPendAng(pend_pos)
         self.sim.setPendVel(pend_vel)

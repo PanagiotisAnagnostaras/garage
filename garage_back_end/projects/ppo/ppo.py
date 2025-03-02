@@ -55,7 +55,7 @@ class PPO:
                 actor_loss = self.update_actor(log_prob_before_buffer=log_prob_buffer, obs_buffer=obs_buffer, advantages_buffer=advantages_buffer)
                 critic_loss = self.update_critic(obs_buffer=obs_buffer, rews2go_buffer=rews2go_buffer)
                 print(f"epoch: {epoch}/{self.n_epochs_per_training_step} actor loss = {actor_loss} critic loss = {critic_loss}")
-            if step%10==0:
+            if step % 50 == 0:
                 self.save(f"step_{step}_total_steps_{total_training_steps}")
             step += 1
 
