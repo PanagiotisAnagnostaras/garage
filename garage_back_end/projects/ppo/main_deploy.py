@@ -29,7 +29,7 @@ class Deployment:
 
 
 if __name__=="__main__":
-    actor_model_path = "/garage_back_end/projects/ppo/saved_models/2025_03_02_13_12_saved_actor_step_510_total_steps_1000.pth"
+    actor_model_path = "/garage_back_end/projects/ppo/saved_models/2025_03_02_19_54_saved_actor_step_50_total_steps_1000.pth"
     env = Env(actions_dim=1, observations_dim=4, step_dt=0.1)    
     deployment = Deployment(env=env, actor_model_path=actor_model_path)
     deployment.set_state(cart_pos=0.0, cart_vel=0.0, pend_pos=0.5, pend_vel=0.0)
