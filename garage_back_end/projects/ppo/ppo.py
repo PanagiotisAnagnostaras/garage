@@ -1,19 +1,24 @@
 import torch.torch_version
 from networks import Actor, Critic
 import torch
-from env import Env, ObsIndexes
+from env import Env
 from torch.distributions import MultivariateNormal
-from matplotlib import pyplot as plt
+from utils import plot_rollout
+from datetime import datetime
 
 
 class PPO:
     def __init__(self, env, steps_per_rollout, n_epochs_per_training_step, n_rollouts_per_training_step, lr_actor, lr_critic) -> None:
+        current_datetime = datetime.now()
+        current_datetime_str = current_datetime.strftime("%Y_%m_%d_%H_%M")
         self.env: Env = env
         self._init_hyperparameters(steps_per_rollout, n_epochs_per_training_step, n_rollouts_per_training_step, lr_actor, lr_critic)
         self.actor = Actor(self.env.dimensions.observations_dims, self.env.dimensions.actions_dims)
         self.actor_opt = torch.optim.Adam(self.actor.parameters(), lr=self.lr_actor)
+        self.actor_saved_filename = f"/garage_back_end/projects/ppo/saved_models/{current_datetime_str}_saved_actor"
         self.critic = Critic(self.env.dimensions.observations_dims)
         self.critic_opt = torch.optim.SGD(self.critic.parameters(), lr=self.lr_critic)
+        self.critic_saved_filename = f"/garage_back_end/projects/ppo/saved_models/{current_datetime_str}_saved_critic"
 
     def _init_hyperparameters(self, steps_per_rollout, n_epochs_per_training_step, n_rollouts_per_training_step, lr_actor, lr_critic) -> None:
         self.steps_per_rollout = steps_per_rollout
@@ -38,7 +43,7 @@ class PPO:
             for rollout in range(self.n_rollouts_per_training_step):
                 # print(f"rollout {rollout+1}/{self.n_rollouts_per_training_step}")
                 obs, acts, rews, log_prob = self.rollout()
-                # self.plot_rollout(obs)
+                # plot_rollout(obs)
                 obs_buffer[rollout, :, :] = obs
                 acts_buffer[rollout, :, :] = acts
                 rews_buffer[rollout, :, :] = rews.unsqueeze(-1)
@@ -50,6 +55,7 @@ class PPO:
                 actor_loss = self.update_actor(log_prob_before_buffer=log_prob_buffer, obs_buffer=obs_buffer, advantages_buffer=advantages_buffer)
                 critic_loss = self.update_critic(obs_buffer=obs_buffer, rews2go_buffer=rews2go_buffer)
                 print(f"epoch: {epoch}/{self.n_epochs_per_training_step} actor loss = {actor_loss} critic loss = {critic_loss}")
+            self.save(f"step_{step}_total_steps_{total_training_steps}")
             step += 1
 
     def rollout(self):
@@ -94,7 +100,7 @@ class PPO:
         return advantages, rews2go
 
     def update_actor(self, log_prob_before_buffer: torch.Tensor, obs_buffer: torch.Tensor, advantages_buffer: torch.Tensor) -> None:
-        _, log_prob = self.compute_actions(obs=obs_buffer[:,:-1, :])
+        _, log_prob = self.compute_actions(obs=obs_buffer[:, :-1, :])
         ratio = torch.exp(log_prob - log_prob_before_buffer.detach().squeeze())
         surr_clipped = torch.clamp(ratio, 1 - self.epsilon, 1 + self.epsilon) * advantages_buffer.detach().squeeze()
         surr_unclipped = ratio * advantages_buffer.detach().squeeze()
@@ -105,7 +111,7 @@ class PPO:
         return actor_loss.item()
 
     def update_critic(self, obs_buffer: torch.Tensor, rews2go_buffer: torch.Tensor) -> None:
-        predicted_V = self.read_value_function(obs=obs_buffer[:,:-1, :])
+        predicted_V = self.read_value_function(obs=obs_buffer[:, :-1, :])
         critic_loss: torch.Tensor = torch.nn.MSELoss()(predicted_V, rews2go_buffer.detach())
         self.critic_opt.zero_grad()
         critic_loss.backward()
@@ -122,24 +128,12 @@ class PPO:
         log_prob = dist.log_prob(action)
         return action, log_prob
 
-    def save(self) -> None:
-        pass
+    def save(self, suffix: str) -> None:
+        torch.save(self.actor, self.actor_saved_filename + f"_{suffix}.pth")
+        torch.save(self.critic, self.critic_saved_filename + f"_{suffix}.pth")
 
     def randomize_initial_state(self) -> None:
         cart_vel = (torch.rand(size=(1,)) * 2 - 1) * self.env.constraints.max_cart_vel
         pend_vel = (torch.rand(size=(1,)) * 2 - 1) * self.env.constraints.max_pend_vel
         pend_pos = (torch.rand(size=(1,))) * 2 * torch.pi
         self.env.set_state(cart_vel=cart_vel.item(), pend_vel=pend_vel.item(), pend_pos=pend_pos.item())
-
-    @staticmethod
-    def plot_rollout(obs):
-        fig, ax = plt.subplots(ncols=2, nrows=2)
-        ax[0][0].plot(obs[:, ObsIndexes.CART_VEL.value], label="cart vel")
-        ax[0][1].plot(obs[:, ObsIndexes.PEND_POS.value], label="pend pos")
-        ax[1][0].plot(obs[:, ObsIndexes.PEND_VEL.value], label="pend vel")
-        ax[1][1].plot(obs[:, ObsIndexes.PREV_ACT.value], label="prev act")
-        ax[0][0].legend()
-        ax[0][1].legend()
-        ax[1][0].legend()
-        ax[1][1].legend()
-        plt.show()
