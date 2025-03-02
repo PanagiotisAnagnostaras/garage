@@ -20,3 +20,4 @@ garage_back_end/back_end_app/__pycache__/
 garage_back_end/projects/__pycache__/
 garage_back_end/projects/simulator/python_facade/__pycache__/
 garage_back_end/projects/ppo/__pycache__
+garage_back_end/projects/ppo/saved_models/
