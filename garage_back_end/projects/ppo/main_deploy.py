@@ -19,9 +19,9 @@ class Deployment:
         s = self.env.get_observations()
         obs.append(s)
         for step in range(steps):
+            print(f"step = {step}/{steps}")
             a = self.actor(s) * self.env.constraints.max_input
             s = self.env.step(a)
-            # print(f"s = {s}")
             acts.append(a)
             obs.append(s)
         obs_t = torch.stack(obs)
@@ -29,8 +29,8 @@ class Deployment:
 
 
 if __name__=="__main__":
-    actor_model_path = "/garage_back_end/projects/ppo/saved_models/2025_03_04_21_53_saved_actor_step_24_total_steps_1000.pth"
+    actor_model_path = "/garage_back_end/projects/ppo/saved_models/2025_03_04_22_15_saved_actor_step_42_total_steps_1000_wo_input_rew.pth"
     env = Env(actions_dim=1, observations_dim=4, step_dt=0.01)    
     deployment = Deployment(env=env, actor_model_path=actor_model_path)
-    deployment.set_state(cart_pos=0.0, cart_vel=0.0, pend_pos=0.5, pend_vel=0.0)
+    deployment.set_state(cart_pos=0.0, cart_vel=0.0, pend_pos=-0.05, pend_vel=0.0)
     deployment.run(steps=100)

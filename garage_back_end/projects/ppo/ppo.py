@@ -49,7 +49,7 @@ class PPO:
                 rews_buffer[rollout, :, :] = rews.unsqueeze(-1)
                 log_prob_buffer[rollout, :, :] = log_prob.unsqueeze(-1)
 
-            print(f"avg reward per rollout = {rews_buffer.sum()/self.n_rollouts_per_training_step}")
+            print(f"avg reward per rollout = {rews_buffer.sum()/self.n_rollouts_per_training_step} mean action = {acts_buffer.sum()/acts_buffer.nelement()}")
             advantages_buffer, rews2go_buffer = self.compute_advantages_and_rews2go(rews_buffer=rews_buffer, obs_buffer=obs_buffer)
             for epoch in range(self.n_epochs_per_training_step):
                 actor_loss = self.update_actor(log_prob_before_buffer=log_prob_buffer, obs_buffer=obs_buffer, advantages_buffer=advantages_buffer)

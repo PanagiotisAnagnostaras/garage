@@ -53,6 +53,7 @@ class Env:
             rew += torch.exp(-((observations[Env.ObsIndexes.PEND_POS.value]) ** 2) / 1)
         else:
             rew += torch.exp(-((2 * torch.pi - observations[Env.ObsIndexes.PEND_POS.value]) ** 2) / 1)
+        rew += 0.1*torch.exp(-((observations[Env.ObsIndexes.PREV_ACT.value]) ** 2) / 1)
         return rew
 
     def step(self, actions: torch.Tensor) -> torch.Tensor:
