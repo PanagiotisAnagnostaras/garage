@@ -14,7 +14,7 @@ class Env:
     class Constraints:
         max_cart_vel = 0
         max_pend_vel = 0
-        max_input = 20
+        max_input = 50
 
     class Dimensions:
         def __init__(self, actions_dims, observations_dims) -> None:

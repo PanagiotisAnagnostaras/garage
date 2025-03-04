@@ -29,7 +29,7 @@ class PPO:
         self.epsilon = epsilon
         self.lr_actor = lr_actor
         self.lr_critic = lr_critic
-        cov_var = torch.full(size=(self.env.dimensions.actions_dims,), fill_value=0.5)
+        cov_var = torch.full(size=(self.env.dimensions.actions_dims,), fill_value=5.0)
         self.cov_mat = torch.diag(cov_var)
 
     def train(self, total_training_steps):
@@ -55,7 +55,7 @@ class PPO:
                 actor_loss = self.update_actor(log_prob_before_buffer=log_prob_buffer, obs_buffer=obs_buffer, advantages_buffer=advantages_buffer)
                 critic_loss = self.update_critic(obs_buffer=obs_buffer, rews2go_buffer=rews2go_buffer)
                 print(f"epoch: {epoch}/{self.n_epochs_per_training_step} actor loss = {actor_loss} critic loss = {critic_loss}")
-            if step % 50 == 0:
+            if step % 2 == 0:
                 self.save(f"step_{step}_total_steps_{total_training_steps}")
             step += 1
 
@@ -126,6 +126,7 @@ class PPO:
         mean = self.actor(obs) * self.env.constraints.max_input
         dist = MultivariateNormal(mean, self.cov_mat)
         action = dist.sample()
+        # print(f"mean={mean} actions={action}")
         log_prob = dist.log_prob(action)
         return action, log_prob
 
