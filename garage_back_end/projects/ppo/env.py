@@ -48,7 +48,7 @@ class Env:
 
     def get_reward(self, observations: torch.Tensor, actions: torch.Tensor) -> torch.Tensor:
         rew = torch.tensor(data=0, dtype=torch.float)
-        assert 0 <= observations[Env.ObsIndexes.PEND_POS.value] < 2 * torch.pi, "Angle must be in [0, 2pi)"
+        assert 0 <= observations[Env.ObsIndexes.PEND_POS.value] < 2 * torch.pi, f"Angle must be in [0, 2pi). Got {observations[Env.ObsIndexes.PEND_POS.value]}"
         if observations[Env.ObsIndexes.PEND_POS.value] <= torch.pi:
             rew += torch.exp(-((observations[Env.ObsIndexes.PEND_POS.value]) ** 2) / 1)
         else:
