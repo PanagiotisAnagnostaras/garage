@@ -26,6 +26,8 @@ class Simulation {
  private:
   physics_simulator::PhysicSimulator physicSimulator_;
   float horizon_;
+  std::mutex mutex;
+  typedef std::lock_guard<std::mutex> Guard;
 };
 
 }  // namespace simulation
