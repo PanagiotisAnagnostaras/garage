@@ -40,3 +40,6 @@ RUN $PIP_VENV install -r requirements.txt
 
 # Build simulator and bindings
 RUN bash /garage_back_end/projects/simulator/installation_scripts/build_simulator.sh
+
+# Include modules
+RUN export PYTHONPATH=$PYTHONPATH:/garage_back_end/projects/ppo/

@@ -1,7 +1,6 @@
-from ppo import PPO
-from env import Env
-from utils import plot_rollout
+from envs.inverted_pendulum import InvertedPendulum
 from networks import Actor
+
 import torch
 import matplotlib.pyplot as plt
 from typing import List
@@ -12,9 +11,9 @@ import matplotlib.animation as animation
 
 
 class Deployment:
-    def __init__(self, env: Env, actor_model_path: str) -> None:
-        self.env = env
-        self.actor = Actor(obs_dim=env.dimensions.observations_dims, act_dim=env.dimensions.actions_dims)
+    def __init__(self, actor_model_path: str) -> None:
+        self.env = InvertedPendulum()
+        self.actor = Actor(obs_dim=self.env.dimensions.observations_dims, act_dim=self.env.dimensions.actions_dims)
         self.actor=torch.load(actor_model_path, weights_only=False)
         self.time_data = []
         self.cart_pos_data = []
@@ -143,8 +142,7 @@ class Deployment:
         s = self.env.step(a)
 
 if __name__=="__main__":
-    actor_model_path = "/garage_back_end/projects/ppo/saved_models/2025_03_04_22_24_saved_actor_step_134_total_steps_1000.pth"
-    env = Env(actions_dim=1, observations_dim=4, step_dt=0.01)    
-    deployment = Deployment(env=env, actor_model_path=actor_model_path)
+    actor_model_path = "/garage_back_end/projects/ppo/saved_models/2025_03_04_22_24_saved_actor_step_134_total_steps_1000_w_input_rew.pth"
+    deployment = Deployment(actor_model_path=actor_model_path)
     deployment.set_state(cart_pos=0.0, cart_vel=0.0, pend_pos=3.14, pend_vel=0.0)
     deployment.run(steps=10000)

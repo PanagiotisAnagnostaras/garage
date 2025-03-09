@@ -1,9 +1,9 @@
-import torch.torch_version
 from networks import Actor, Critic
+from envs.env import Env
+
+import torch.torch_version
 import torch
-from env import Env
 from torch.distributions import MultivariateNormal
-from utils import plot_rollout
 from datetime import datetime
 
 
