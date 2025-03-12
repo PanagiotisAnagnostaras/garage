@@ -129,3 +129,4 @@ std::ostream &operator<<(std::ostream &os, const Vector<T> &v)
 }
 
 typedef Vector<float> Vf;
+typedef std::lock_guard<std::mutex> guard;

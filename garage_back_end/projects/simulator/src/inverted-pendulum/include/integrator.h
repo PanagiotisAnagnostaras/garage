@@ -9,6 +9,8 @@
 #include <memory>
 
 namespace integrator {
+enum solverType { EXPLICIT_EULER = 0 };
+
 class I_NumericalIntegrator {
  public:
   I_NumericalIntegrator(float timestep_s_);
