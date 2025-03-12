@@ -1,33 +1,40 @@
-#include <thread>
+#pragma once
 
-#include "physics_sim.h"
+#include <chrono>
+#include <cmath>
+#include <filesystem>
+#include <fstream>
+#include <iostream>
+#include <map>
+#include <memory>
+#include <mutex>
 
-namespace simulation {
+#include "integrator.h"
+#include "systems.h"
+#include "types.h"
 
-class Simulation {
+namespace physics_simulator {
+
+class PhysicSimulator {
  public:
-  Simulation();
-  ~Simulation();
-  void run(float horizon, bool realtime);
-  void applyInput(float input);
-  float getTime();
-  void setCartPos(float val);
-  void setCartVel(float val);
-  void setPendAng(float val);
-  void setPendVel(float val);
-  float getCartPos();
-  float getCartVel();
-  float getPendAng();
-  float getPendVel();
-  float getInput();
-
+  PhysicSimulator(
+      float timestep_s = 1e-3,
+      integrator::solverType solver_type =
+          integrator::solverType::EXPLICIT_EULER,
+      systems::SystemType system_type = systems::SystemType::POINT_2D);
+  void simulate(bool realtime, float horizon_s);
+  void setState(Vf state);
+  void setInput(Vf input);
+  Vf getState();
+  Vf getInput();
   bool isRunning();
+  float getTime();
 
  private:
-  physics_simulator::PhysicSimulator physicSimulator_;
-  float horizon_;
-  std::mutex mutex;
-  typedef std::lock_guard<std::mutex> Guard;
+  bool sim_is_over_;
+  float timestep_s_, elapsed_sim_time_s_;
+  std::unique_ptr<systems::SystemsBase> system_ptr_;
+  std::unique_ptr<integrator::I_NumericalIntegrator> solver_ptr_;
+  std::mutex mutex_;
 };
-
-}  // namespace simulation
+}  // namespace physics_simulator
