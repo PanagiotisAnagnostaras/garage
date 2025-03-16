@@ -4,7 +4,11 @@ from binder import SimulationFacade
 
 
 class Env(ABC):
-
+    class Dimensions:
+        actions_dims = None
+        observations_dims = None
+        states_dims = None
+        
     def __init__(self) -> None:
         self.sim = SimulationFacade()
         self.step_dt = 0.1
@@ -36,4 +40,16 @@ class Env(ABC):
 
     @abstractmethod
     def get_reward(self) -> torch.Tensor:
+        pass
+    
+    @abstractmethod
+    def plot_rollout(self) -> torch.Tensor:
+        pass
+    
+    @abstractmethod
+    def get_action_constraints(self) -> torch.Tensor:
+        pass
+    
+    @abstractmethod
+    def get_state_constraints(self) -> torch.Tensor:
         pass

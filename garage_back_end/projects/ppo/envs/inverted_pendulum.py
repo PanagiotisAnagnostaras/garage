@@ -5,7 +5,8 @@ from envs.env import Env
 from matplotlib import pyplot as plt
 from matplotlib.axes import Axes
 from typing import List
-
+# todo:
+# - wrap circle to [0,2pi]
 
 class InvertedPendulum(Env):
     class ObsIndexes(Enum):
@@ -20,11 +21,6 @@ class InvertedPendulum(Env):
         PEND_POS = 2
         PEND_VEL = 3
 
-    class Constraints:
-        max_cart_vel = 0
-        max_pend_vel = 0
-        max_input = 50
-
     class Dimensions:
         actions_dims = 1
         observations_dims = 4
@@ -37,11 +33,11 @@ class InvertedPendulum(Env):
     def get_observations(self) -> torch.Tensor:
         obs = torch.zeros(size=(self.Dimensions.observations_dims,))
         state = self.get_state()
-        input = self.get_input()
-        obs[self.ObsIndexes.CART_VEL.value] = state[self.StatesIndex.CART_VEL]
-        obs[self.ObsIndexes.PEND_POS.value] = state[self.StatesIndex.PEND_POS]
-        obs[self.ObsIndexes.PEND_VEL.value] = state[self.StatesIndex.PEND_VEL]
-        obs[self.ObsIndexes.PREV_ACT.value] = input[0]
+        actions = self.get_actions()
+        obs[self.ObsIndexes.CART_VEL.value] = state[self.StatesIndex.CART_VEL.value]
+        obs[self.ObsIndexes.PEND_POS.value] = state[self.StatesIndex.PEND_POS.value]
+        obs[self.ObsIndexes.PEND_VEL.value] = state[self.StatesIndex.PEND_VEL.value]
+        obs[self.ObsIndexes.PREV_ACT.value] = actions[0]
         return obs
 
     def get_reward(self, observations: torch.Tensor, actions: torch.Tensor) -> torch.Tensor:
@@ -66,3 +62,15 @@ class InvertedPendulum(Env):
         ax[1][0].legend()
         ax[1][1].legend()
         plt.show()
+
+    def get_action_constraints(self) -> torch.Tensor:
+        max_applied_input = [100]
+        return torch.tensor(data=max_applied_input)
+    
+    def get_state_constraints(self) -> torch.Tensor:
+        max_cart_pos = 1
+        max_cart_vel = 0
+        max_pend_pos = 1
+        max_pend_vel = 0
+        constraints = [max_cart_pos, max_cart_vel, max_pend_pos, max_pend_vel]
+        return torch.tensor(data=constraints)

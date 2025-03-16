@@ -5,7 +5,7 @@ from envs.env import Env
 from matplotlib import pyplot as plt
 from matplotlib.axes import Axes
 from typing import List
-
+import math
 
 class Point2D(Env):
     class ObsIndexes(Enum):
@@ -14,7 +14,7 @@ class Point2D(Env):
         Y_POS = 2
         Y_VEL = 3
         X_FORCE = 4
-        Y_FORCE = 6
+        Y_FORCE = 5
 
     class StatesIndex(Enum):
         X_POS = 0
@@ -26,9 +26,6 @@ class Point2D(Env):
         X_FORCE = 0
         Y_FORCE = 1
         
-    class Constraints:
-        pass
-
     class Dimensions:
         actions_dims = 2
         observations_dims = 6
@@ -46,12 +43,16 @@ class Point2D(Env):
         obs[self.ObsIndexes.X_VEL.value] = state[self.StatesIndex.X_VEL.value]
         obs[self.ObsIndexes.Y_POS.value] = state[self.StatesIndex.Y_POS.value]
         obs[self.ObsIndexes.Y_VEL.value] = state[self.StatesIndex.Y_VEL.value]
-        obs[self.ObsIndexes.X_FORCE.value] = input[self.ActionsIndex.X_FORCE]
-        obs[self.ObsIndexes.Y_FORCE.value] = input[self.ActionsIndex.Y_FORCE]
+        obs[self.ObsIndexes.X_FORCE.value] = input[self.ActionsIndex.X_FORCE.value]
+        obs[self.ObsIndexes.Y_FORCE.value] = input[self.ActionsIndex.Y_FORCE.value]
         return obs
 
     def get_reward(self, observations: torch.Tensor, actions: torch.Tensor) -> torch.Tensor:
         rew = torch.tensor(data=0, dtype=torch.float)
+        distance = math.hypot(observations[self.ObsIndexes.X_POS.value], observations[self.ObsIndexes.Y_POS.value])
+        velocity = math.hypot(observations[self.ObsIndexes.X_VEL.value], observations[self.ObsIndexes.Y_VEL.value])
+        rew += 10*torch.exp(-(torch.tensor(data=distance) ** 2) / 1)
+        rew += torch.exp(-(torch.tensor(data=velocity) ** 2) / 1)
         return rew
 
     def plot_rollout(self, obs: torch.Tensor):
@@ -66,3 +67,15 @@ class Point2D(Env):
         ax[1][0].legend()
         ax[1][1].legend()
         plt.show()
+
+    def get_action_constraints(self) -> torch.Tensor:
+        max_applied_input = [10, 10]
+        return torch.tensor(data=max_applied_input)
+    
+    def get_state_constraints(self) -> torch.Tensor:
+        max_x_pos = 1
+        max_x_vel = 10
+        max_y_pos = 1
+        max_y_vel = 10
+        constraints = [max_x_pos, max_x_vel, max_y_pos, max_y_vel]
+        return torch.tensor(data=constraints)

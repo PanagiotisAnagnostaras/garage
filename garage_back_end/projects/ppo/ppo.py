@@ -13,10 +13,10 @@ class PPO:
         current_datetime_str = current_datetime.strftime("%Y_%m_%d_%H_%M")
         self.env: Env = env
         self._init_hyperparameters(steps_per_rollout=steps_per_rollout, n_epochs_per_training_step=n_epochs_per_training_step, n_rollouts_per_training_step=n_rollouts_per_training_step, lr_actor=lr_actor, lr_critic=lr_critic, epsilon=epsilon)
-        self.actor = Actor(self.env.dimensions.observations_dims, self.env.dimensions.actions_dims)
+        self.actor = Actor(self.env.Dimensions.observations_dims, self.env.Dimensions.actions_dims)
         self.actor_opt = torch.optim.Adam(self.actor.parameters(), lr=self.lr_actor)
         self.actor_saved_filename = f"/garage_back_end/projects/ppo/saved_models/{current_datetime_str}_saved_actor"
-        self.critic = Critic(self.env.dimensions.observations_dims)
+        self.critic = Critic(self.env.Dimensions.observations_dims)
         self.critic_opt = torch.optim.SGD(self.critic.parameters(), lr=self.lr_critic)
         self.critic_saved_filename = f"/garage_back_end/projects/ppo/saved_models/{current_datetime_str}_saved_critic"
 
@@ -29,15 +29,15 @@ class PPO:
         self.epsilon = epsilon
         self.lr_actor = lr_actor
         self.lr_critic = lr_critic
-        cov_var = torch.full(size=(self.env.dimensions.actions_dims,), fill_value=5.0)
+        cov_var = torch.full(size=(self.env.Dimensions.actions_dims,), fill_value=5.0)
         self.cov_mat = torch.diag(cov_var)
 
     def train(self, total_training_steps):
         step = 0
         while step < total_training_steps:
             print(f"-------------- training steps = {step+1}/{total_training_steps} --------------")
-            obs_buffer = torch.zeros(size=(self.n_rollouts_per_training_step, self.steps_per_rollout + 1, self.env.dimensions.observations_dims))
-            acts_buffer = torch.zeros(size=(self.n_rollouts_per_training_step, self.steps_per_rollout, self.env.dimensions.actions_dims))
+            obs_buffer = torch.zeros(size=(self.n_rollouts_per_training_step, self.steps_per_rollout + 1, self.env.Dimensions.observations_dims))
+            acts_buffer = torch.zeros(size=(self.n_rollouts_per_training_step, self.steps_per_rollout, self.env.Dimensions.actions_dims))
             rews_buffer = torch.zeros(size=(self.n_rollouts_per_training_step, self.steps_per_rollout, 1))
             log_prob_buffer = torch.zeros(size=(self.n_rollouts_per_training_step, self.steps_per_rollout, 1))
             for rollout in range(self.n_rollouts_per_training_step):
@@ -123,7 +123,7 @@ class PPO:
         return self.critic(obs)
 
     def compute_actions(self, obs: torch.Tensor) -> torch.Tensor:
-        mean = self.actor(obs) * self.env.constraints.max_input
+        mean = self.actor(obs) * self.env.get_action_constraints()
         dist = MultivariateNormal(mean, self.cov_mat)
         action = dist.sample()
         # print(f"mean={mean} actions={action}")
@@ -135,7 +135,5 @@ class PPO:
         torch.save(self.critic, self.critic_saved_filename + f"_{suffix}.pth")
 
     def randomize_initial_state(self) -> None:
-        cart_vel = (torch.rand(size=(1,)) * 2 - 1) * self.env.constraints.max_cart_vel
-        pend_vel = (torch.rand(size=(1,)) * 2 - 1) * self.env.constraints.max_pend_vel
-        pend_pos = (torch.rand(size=(1,))) * 2 * torch.pi
-        self.env.set_state(cart_vel=cart_vel.item(), pend_vel=pend_vel.item(), pend_pos=pend_pos.item())
+        random_state = torch.rand(size=(self.env.Dimensions.states_dims,)) * self.env.get_state_constraints()
+        self.env.set_state(random_state)
