@@ -30,10 +30,8 @@ class Simulation {
   float getTime();
   void setSystemType(systems::SystemType system_type);
   void setSolverType(integrator::solverType solver_type);
-  uint getNx();
 
  private:
-  uint nx_;
   bool sim_is_over_;
   float timestep_s_, elapsed_sim_time_s_;
   std::unique_ptr<systems::SystemsBase> system_ptr_;

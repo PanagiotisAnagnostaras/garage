@@ -15,14 +15,22 @@ class SystemsBase {
   Vf getInput();
   virtual void computeDerivative() = 0;
   Vf getDerivative();
+  uint getNx();
+  uint getNu();
+  std::string getName();
+  void resetStates();
 
  protected:
   Vf state_;
   Vf input_;
   Vf derivative_;
+  uint nx_, nu_;
+  std::string name_;
 };
 
 class Point2D : public SystemsBase {
+ public:
+  Point2D();
   static constexpr uint STATE_INDEX_X_POS = 0;
   static constexpr uint STATE_INDEX_X_VEL = 1;
   static constexpr uint STATE_INDEX_Y_POS = 2;
@@ -34,6 +42,7 @@ class Point2D : public SystemsBase {
 
 class InvertedPendulum : public SystemsBase {
  public:
+  InvertedPendulum();
   static constexpr uint STATE_INDEX_CART_POS = 0;
   static constexpr uint STATE_INDEX_CART_VEL = 1;
   static constexpr uint STATE_INDEX_PEND_ANG = 2;
@@ -41,6 +50,7 @@ class InvertedPendulum : public SystemsBase {
   void computeDerivative();
 
  private:
-  float mass_cart_, mass_pendulum_, length_, g_, inertia_;
+  const float mass_cart_{1}, mass_pendulum_{1}, length_{1}, g_{9.81},
+      inertia_{1};
 };
 }  // namespace systems

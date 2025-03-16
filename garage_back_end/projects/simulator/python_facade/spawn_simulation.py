@@ -1,4 +1,4 @@
-from binder import Simulation
+from binder import SimulationFacade
 from matplotlib import pyplot as plt
 from matplotlib import patches
 from typing import List
@@ -9,7 +9,8 @@ import sys
 
 class SimulationPy:
     def __init__(self) -> None:
-        self._sim = Simulation()
+        self._sim = SimulationFacade()
+        self._sim.setSystemInvertedPendulum()
         self.time_data = []
         self.cart_pos_data = []
         self.cart_vel_data = []
@@ -90,13 +91,16 @@ class SimulationPy:
             return line_cart_pos, line_cart_vel, line_pend_ang, line_pend_vel, line_input, line_animation
 
         def update(frame):
-            self._sim.run(self.plot_period_s, True)
+            print(f"before")
+            self._sim.simulate(True, self.plot_period_s)
+            print(f"after")
             self.time += self._sim.getTime()
-            cart_pos: float = self._sim.getCartPos()
-            cart_vel: float = self._sim.getCartVel()
-            pend_ang: float = self._sim.getPendAng()
-            pend_vel: float = self._sim.getPendVel()
-            input_signal: float = self._sim.getInput()
+            state = self._sim.getState()
+            cart_pos: float = state[0]
+            cart_vel: float = state[1]
+            pend_ang: float = state[2]
+            pend_vel: float = state[3]
+            input_signal: float = self._sim.getInput()[0]
             print(f"self.time = {self.time} cart_pos = {cart_pos} cart_vel = {cart_vel} pend_ang = {pend_ang} pend_vel = {pend_vel} input_signal = {input_signal}")
 
             self.time_data.append(self.time)

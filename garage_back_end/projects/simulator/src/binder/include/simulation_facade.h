@@ -9,6 +9,7 @@ class SimulationFacade {
   void setSystemInvertedPendulum();
   void simulate(bool realtime, float horizon_s);
   std::vector<float> getState();
+  std::vector<float> getInput();
   void setState(const std::vector<float> &state);
   void setInput(const std::vector<float> &input);
   float getTime();

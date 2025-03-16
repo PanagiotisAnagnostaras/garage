@@ -10,11 +10,17 @@ void SimulationFacade::setSystemInvertedPendulum() {
 };
 
 void SimulationFacade::simulate(bool realtime, float horizon_s) {
+  std::cout << "before  SimulationFacade::simulate" << std::endl;
   simulation_.simulate(realtime, horizon_s);
+  std::cout << "after  SimulationFacade::simulate" << std::endl;
 };
 
 std::vector<float> SimulationFacade::getState() {
   return simulation_.getState().getInternalVector();
+};
+
+std::vector<float> SimulationFacade::getInput() {
+  return simulation_.getInput().getInternalVector();
 };
 
 void SimulationFacade::setState(const std::vector<float> &state) {
@@ -33,7 +39,5 @@ void SimulationFacade::setInput(const std::vector<float> &input) {
   simulation_.setInput(inputVf);
 };
 
-float SimulationFacade::getTime() {
-    return simulation_.getTime();
-}
+float SimulationFacade::getTime() { return simulation_.getTime(); }
 }  // namespace simulation_facade
