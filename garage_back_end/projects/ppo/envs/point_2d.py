@@ -56,12 +56,13 @@ class Point2D(Env):
         return rew
 
     def plot_rollout(self, obs: torch.Tensor):
-        fig, ax = plt.subplots(ncols=2, nrows=2)
+        fig, ax = plt.subplots(ncols=3, nrows=2)
         ax: List[List[Axes]]
-        ax[0][0].plot(obs[:, self.ObsIndexes.CART_VEL.value], label="cart vel")
-        ax[0][1].plot(obs[:, self.ObsIndexes.PEND_POS.value], label="pend pos")
-        ax[1][0].plot(obs[:, self.ObsIndexes.PEND_VEL.value], label="pend vel")
-        ax[1][1].plot(obs[:, self.ObsIndexes.PREV_ACT.value], label="prev act")
+        ax[0][0].plot(obs[:, self.ObsIndexes.X_POS.value], label="x pos")
+        ax[0][1].plot(obs[:, self.ObsIndexes.Y_POS.value], label="y pos")
+        ax[1][0].plot(obs[:, self.ObsIndexes.X_VEL.value], label="x vel")
+        ax[1][1].plot(obs[:, self.ObsIndexes.Y_VEL.value], label="y vel")
+        ax[0][2].plot(obs[:, self.ObsIndexes.X_POS.value], obs[:, self.ObsIndexes.Y_POS.value], label="x-y")
         ax[0][0].legend()
         ax[0][1].legend()
         ax[1][0].legend()
