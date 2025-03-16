@@ -21,6 +21,7 @@ class SimulationPy:
         self.plot_period_s = 0.1
 
     def run(self, steps: int):
+        self._sim.setState([0.0, 0.0, 1.0, 0.0])
         remaining_steps = steps
         fig, ax = plt.subplots(ncols=3, nrows=2)
         ax: List[List[plt.Axes]]
