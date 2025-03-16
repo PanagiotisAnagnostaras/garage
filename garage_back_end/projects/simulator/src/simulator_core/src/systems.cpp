@@ -3,8 +3,6 @@
 namespace systems {
 void SystemsBase::setState(Vf state) {
   state_ = state;
-  std::cout << "Systems Base state" << std::endl;
-  std::cout << state_ << std::endl;
 }
 void SystemsBase::setInput(Vf input) { input_ = input; }
 Vf SystemsBase::getState() { return state_; }
