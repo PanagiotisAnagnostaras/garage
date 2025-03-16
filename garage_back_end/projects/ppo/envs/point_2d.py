@@ -7,51 +7,51 @@ from matplotlib.axes import Axes
 from typing import List
 
 
-class InvertedPendulum(Env):
+class Point2D(Env):
     class ObsIndexes(Enum):
-        CART_VEL = 0
-        PEND_POS = 1
-        PEND_VEL = 2
-        PREV_ACT = 3
+        X_POS = 0
+        X_VEL = 1
+        Y_POS = 2
+        Y_VEL = 3
+        X_FORCE = 4
+        Y_FORCE = 6
 
     class StatesIndex(Enum):
-        CART_POS = 0
-        CART_VEL = 1
-        PEND_POS = 2
-        PEND_VEL = 3
+        X_POS = 0
+        X_VEL = 1
+        Y_POS = 2
+        Y_VEL = 3
 
+    class ActionsIndex(Enum):
+        X_FORCE = 0
+        Y_FORCE = 1
+        
     class Constraints:
-        max_cart_vel = 0
-        max_pend_vel = 0
-        max_input = 50
+        pass
 
     class Dimensions:
-        actions_dims = 1
-        observations_dims = 4
+        actions_dims = 2
+        observations_dims = 6
         states_dims = 4
 
     def __init__(self) -> None:
         super().__init__()
-        self.sim.setSystemInvertedPendulum()
+        self.sim.setSystemPoint2D()
 
     def get_observations(self) -> torch.Tensor:
         obs = torch.zeros(size=(self.Dimensions.observations_dims,))
         state = self.get_state()
-        input = self.get_input()
-        obs[self.ObsIndexes.CART_VEL.value] = state[self.StatesIndex.CART_VEL]
-        obs[self.ObsIndexes.PEND_POS.value] = state[self.StatesIndex.PEND_POS]
-        obs[self.ObsIndexes.PEND_VEL.value] = state[self.StatesIndex.PEND_VEL]
-        obs[self.ObsIndexes.PREV_ACT.value] = input[0]
+        input = self.get_actions()
+        obs[self.ObsIndexes.X_POS.value] = state[self.StatesIndex.X_POS.value]
+        obs[self.ObsIndexes.X_VEL.value] = state[self.StatesIndex.X_VEL.value]
+        obs[self.ObsIndexes.Y_POS.value] = state[self.StatesIndex.Y_POS.value]
+        obs[self.ObsIndexes.Y_VEL.value] = state[self.StatesIndex.Y_VEL.value]
+        obs[self.ObsIndexes.X_FORCE.value] = input[self.ActionsIndex.X_FORCE]
+        obs[self.ObsIndexes.Y_FORCE.value] = input[self.ActionsIndex.Y_FORCE]
         return obs
 
     def get_reward(self, observations: torch.Tensor, actions: torch.Tensor) -> torch.Tensor:
         rew = torch.tensor(data=0, dtype=torch.float)
-        assert 0 <= observations[self.ObsIndexes.PEND_POS.value] < 2 * torch.pi, f"Angle must be in [0, 2pi). Got {observations[self.ObsIndexes.PEND_POS.value]}"
-        if observations[self.ObsIndexes.PEND_POS.value] <= torch.pi:
-            rew += torch.exp(-((observations[self.ObsIndexes.PEND_POS.value]) ** 2) / 1)
-        else:
-            rew += torch.exp(-((2 * torch.pi - observations[self.ObsIndexes.PEND_POS.value]) ** 2) / 1)
-        rew += 0.1 * torch.exp(-((observations[self.ObsIndexes.PREV_ACT.value]) ** 2) / 1)
         return rew
 
     def plot_rollout(self, obs: torch.Tensor):
