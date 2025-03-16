@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(inverted-pendulum)
+project(simulator_core)
 
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 17)
