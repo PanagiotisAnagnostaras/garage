@@ -3,6 +3,7 @@
 #include <vector>
 #include <ostream>
 #include <iostream>
+#include <mutex>
 class InvalidSizes : public std::exception
 {
 public:
@@ -18,7 +19,7 @@ class Vector
 public:
     Vector(const std::vector<T> &vector) : internal_vector_(vector){};
     Vector(){};
-    std::vector<T> get_internal_vector() const { return internal_vector_; };
+    std::vector<T> getInternalVector() const { return internal_vector_; };
     void set_internal_vector(std::vector<T> internal_vector) { internal_vector_ = internal_vector; };
     int size() const { return internal_vector_.size(); };
     void push_back(const T el) { internal_vector_.push_back(el); }
@@ -34,7 +35,7 @@ template <typename T>
 Vector<T> operator*(const Vector<T> &v, const float &f)
 {
     Vector<T> res;
-    for (auto &el : v.get_internal_vector())
+    for (auto &el : v.getInternalVector())
     {
         res.push_back(el * f);
     }
@@ -51,7 +52,7 @@ template <typename T>
 Vector<T> operator+(const Vector<T> &v, const float &f)
 {
     Vector<T> res;
-    for (auto &el : v.get_internal_vector())
+    for (auto &el : v.getInternalVector())
     {
         res.push_back(el + f);
     }
@@ -73,8 +74,8 @@ Vector<T> operator+(const Vector<T> &v1, const Vector<T> &v2)
     }
 
     Vector<T> res;
-    std::vector<T> _v1 = v1.get_internal_vector();
-    std::vector<T> _v2 = v2.get_internal_vector();
+    std::vector<T> _v1 = v1.getInternalVector();
+    std::vector<T> _v2 = v2.getInternalVector();
     auto it_1 = _v1.begin();
     auto it_2 = _v2.begin();
     while (it_1 != _v1.end())
@@ -114,7 +115,7 @@ Vector<T> operator/(const Vector<T> &v, const float &f)
 template <typename T>
 std::ostream &operator<<(std::ostream &os, const Vector<T> &v)
 {
-    const std::vector<T> &v_std = v.get_internal_vector();
+    const std::vector<T> &v_std = v.getInternalVector();
     os << "[";
     for (auto &el : v_std)
     {

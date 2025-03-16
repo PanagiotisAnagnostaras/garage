@@ -1,6 +1,6 @@
 #include "systems.h"
 
-namespace Systems {
+namespace systems {
 void SystemsBase::setState(Vf state) { state_ = state; }
 void SystemsBase::setInput(Vf input) { input_ = input; }
 Vf SystemsBase::getState() { return state_; }
@@ -40,4 +40,4 @@ void InvertedPendulum::computeDerivative() {
        pow(mass_pendulum_, 2) * pow(length_, 2) *
            pow(cos(state_[STATE_INDEX_PEND_ANG]), 2));
 }
-}  // namespace Systems
+}  // namespace systems

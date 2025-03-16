@@ -3,30 +3,12 @@
 #include "simulation.h"
 
 namespace simulation {
-Simulation::Simulation(float timestep_s,
-                                 integrator::solverType solver_type,
-                                 systems::SystemType system_type)
+Simulation::Simulation(float timestep_s, integrator::solverType solver_type,
+                       systems::SystemType system_type)
     : timestep_s_(timestep_s), sim_is_over_(false), elapsed_sim_time_s_(0.0) {
-  switch (solver_type) {
-    case integrator::solverType::EXPLICIT_EULER:
-      solver_ptr_ = std::make_unique<integrator::ExplicitEuler>(timestep_s_);
-      break;
-
-    default:
-      solver_ptr_ = std::make_unique<integrator::ExplicitEuler>(timestep_s_);
-      break;
-  }
-  switch (system_type) {
-    case systems::SystemType::POINT_2D:
-      system_ptr_ = std::make_unique<systems::Point2D>();
-      break;
-    case systems::SystemType::INVERTED_PENDULUM:
-      system_ptr_ = std::make_unique<systems::InvertedPendulum>();
-      break;
-    default:
-      system_ptr_ = std::make_unique<systems::Point2D>();
-      break;
-  }
+  setSystemType(systems::POINT_2D);
+  setSolverType(integrator::EXPLICIT_EULER);
+  nx_ = system_ptr_->getState().size();
 }
 
 void Simulation::simulate(bool realtime, float horizon) {
@@ -84,4 +66,31 @@ float Simulation::getTime() {
   return elapsed_sim_time_s_;
 };
 
+void Simulation::setSystemType(systems::SystemType system_type) {
+  switch (system_type) {
+    case systems::SystemType::POINT_2D:
+      system_ptr_ = std::make_unique<systems::Point2D>();
+      break;
+    case systems::SystemType::INVERTED_PENDULUM:
+      system_ptr_ = std::make_unique<systems::InvertedPendulum>();
+      break;
+    default:
+      system_ptr_ = std::make_unique<systems::Point2D>();
+      break;
+  }
+};
+
+void Simulation::setSolverType(integrator::solverType solver_type) {
+  switch (solver_type) {
+    case integrator::solverType::EXPLICIT_EULER:
+      solver_ptr_ = std::make_unique<integrator::ExplicitEuler>(timestep_s_);
+      break;
+
+    default:
+      solver_ptr_ = std::make_unique<integrator::ExplicitEuler>(timestep_s_);
+      break;
+  }
+}
+
+uint Simulation::getNx() { return nx_; }
 }  // namespace simulation

@@ -5,12 +5,14 @@ class SimulationFacade {
  public:
   SimulationFacade() = default;
   ~SimulationFacade() = default;
-    void setSystemPoint2D();
-    void setSystemInvertedPendulum();
-    void simulate(bool realtime, float horizon_s);
-    std::vector<double> getState();
-    void setState(const std::vector<double> &state);
-    void setInput(const std::vector<double> &input);
+  void setSystemPoint2D();
+  void setSystemInvertedPendulum();
+  void simulate(bool realtime, float horizon_s);
+  std::vector<float> getState();
+  void setState(const std::vector<float> &state);
+  void setInput(const std::vector<float> &input);
+  float getTime();
+
  private:
   simulation::Simulation simulation_;
 };
