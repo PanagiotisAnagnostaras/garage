@@ -13,11 +13,11 @@
 #include "systems.h"
 #include "types.h"
 
-namespace physics_simulator {
+namespace simulation {
 
-class PhysicSimulator {
+class Simulation {
  public:
-  PhysicSimulator(
+  Simulation(
       float timestep_s = 1e-3,
       integrator::solverType solver_type =
           integrator::solverType::EXPLICIT_EULER,
@@ -37,4 +37,4 @@ class PhysicSimulator {
   std::unique_ptr<integrator::I_NumericalIntegrator> solver_ptr_;
   std::mutex mutex_;
 };
-}  // namespace physics_simulator
+}  // namespace simulation

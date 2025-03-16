@@ -1,9 +1,9 @@
 // https://techteach.no/simview_2010/pendulum/pendulum_model.pdf
 
-#include "physics_sim.h"
+#include "simulation.h"
 
-namespace physics_simulator {
-PhysicSimulator::PhysicSimulator(float timestep_s,
+namespace simulation {
+Simulation::Simulation(float timestep_s,
                                  integrator::solverType solver_type,
                                  systems::SystemType system_type)
     : timestep_s_(timestep_s), sim_is_over_(false), elapsed_sim_time_s_(0.0) {
@@ -29,7 +29,7 @@ PhysicSimulator::PhysicSimulator(float timestep_s,
   }
 }
 
-void PhysicSimulator::simulate(bool realtime, float horizon) {
+void Simulation::simulate(bool realtime, float horizon) {
   sim_is_over_ = false;
   uint32_t total_steps = horizon / timestep_s_;
   uint32_t current_step = 0;
@@ -54,34 +54,34 @@ void PhysicSimulator::simulate(bool realtime, float horizon) {
   sim_is_over_ = true;
 }
 
-void physics_simulator::PhysicSimulator::setState(Vf state) {
+void simulation::Simulation::setState(Vf state) {
   guard{mutex_};
   system_ptr_->setState(state);
 }
 
-void physics_simulator::PhysicSimulator::setInput(Vf input) {
+void simulation::Simulation::setInput(Vf input) {
   guard{mutex_};
   system_ptr_->setInput(input);
 }
 
-Vf PhysicSimulator::getState() {
+Vf Simulation::getState() {
   guard{mutex_};
   return system_ptr_->getState();
 }
 
-Vf PhysicSimulator::getInput() {
+Vf Simulation::getInput() {
   guard{mutex_};
   return system_ptr_->getInput();
 }
 
-bool PhysicSimulator::isRunning() {
+bool Simulation::isRunning() {
   guard{mutex_};
   return !sim_is_over_;
 }
 
-float PhysicSimulator::getTime() {
+float Simulation::getTime() {
   guard{mutex_};
   return elapsed_sim_time_s_;
 };
 
-}  // namespace physics_simulator
+}  // namespace simulation

@@ -7,10 +7,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Source files
 set(SOURCES
-    src/simulation.cpp
-    src/physics_sim.cpp
     src/integrator.cpp
-    src/controller.cpp
+    src/linear_algebra.cpp
+    src/simulation.cpp
+    src/systems.cpp
 )
 
 set(TESTS
