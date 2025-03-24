@@ -135,5 +135,5 @@ class PPO:
         torch.save(self.critic, self.critic_saved_filename + f"_{suffix}.pth")
 
     def randomize_initial_state(self) -> None:
-        random_state = torch.rand(size=(self.env.Dimensions.states_dims,)) * self.env.get_state_constraints()
+        random_state = 2 * (torch.rand(size=(self.env.Dimensions.states_dims,)) - 0.5) * self.env.get_state_constraints()
         self.env.set_state(random_state)

@@ -80,9 +80,9 @@ class Point2D(Env):
 
     def get_state_constraints(self) -> torch.Tensor:
         max_x_pos = 1
-        max_x_vel = 10
+        max_x_vel = 0
         max_y_pos = 1
-        max_y_vel = 10
+        max_y_vel = 0
         constraints = [max_x_pos, max_x_vel, max_y_pos, max_y_vel]
         return torch.tensor(data=constraints)
 
