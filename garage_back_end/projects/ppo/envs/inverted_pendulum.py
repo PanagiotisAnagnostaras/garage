@@ -15,6 +15,7 @@ from networks import Actor
 # todo:
 # - wrap circle to [0,2pi]
 
+
 class InvertedPendulum(Env):
     class ObsIndexes(Enum):
         CART_VEL = 0
@@ -73,7 +74,7 @@ class InvertedPendulum(Env):
     def get_action_constraints(self) -> torch.Tensor:
         max_applied_input = [100]
         return torch.tensor(data=max_applied_input)
-    
+
     def get_state_constraints(self) -> torch.Tensor:
         max_cart_pos = 1
         max_cart_vel = 0
@@ -81,11 +82,12 @@ class InvertedPendulum(Env):
         max_pend_vel = 0
         constraints = [max_cart_pos, max_cart_vel, max_pend_pos, max_pend_vel]
         return torch.tensor(data=constraints)
-    
+
+
 class AnimationInvertedPendulum(InvertedPendulum):
     def __init__(self, actor_model_path) -> None:
         super().__init__()
-        matplotlib.use('TkAgg')
+        matplotlib.use("TkAgg")
         self.time_data = []
         self.cart_pos_data = []
         self.cart_vel_data = []
@@ -97,7 +99,7 @@ class AnimationInvertedPendulum(InvertedPendulum):
         actor = Actor(obs_dim=self.Dimensions.observations_dims, act_dim=self.Dimensions.actions_dims)
         actor = torch.load(actor_model_path, weights_only=False)
         self.actor = actor
-    
+
     def animate(self, steps: int, x0: torch.tensor):
         self.set_state(x0)
         remaining_steps = steps
@@ -144,7 +146,7 @@ class AnimationInvertedPendulum(InvertedPendulum):
         ax_animation.set_ylabel("y")
 
         cart = patches.Rectangle((0, 0), 0.2, 0.1, linewidth=2, edgecolor="r", facecolor="none")
-        pendulum = patches.FancyArrow(0, 0, 0.0, 1.0, head_width=0.0,head_length=0.0, linewidth=2, edgecolor="g")
+        pendulum = patches.FancyArrow(0, 0, 0.0, 1.0, head_width=0.0, head_length=0.0, linewidth=2, edgecolor="g")
 
         ax_animation.add_patch(cart)
         ax_animation.add_patch(pendulum)
@@ -159,7 +161,6 @@ class AnimationInvertedPendulum(InvertedPendulum):
             ax_cart_vel.set_xlim(0, 10)
             ax_pend_ang.set_xlim(0, 10)
             ax_pend_vel.set_xlim(0, 10)
-            ax_animation.set_xlim(-2, 2)
             ax_input.set_xlim(0, 10)
             ax_cart_pos.set_ylim(-5, 10)
             ax_cart_vel.set_ylim(-5, 10)
@@ -170,14 +171,14 @@ class AnimationInvertedPendulum(InvertedPendulum):
             return line_cart_pos, line_cart_vel, line_pend_ang, line_pend_vel, line_input, line_animation
 
         def update(frame):
-            self.mdp_step()
+            self._mdp_step()
             actions = self.get_actions()
             self.time += self.get_time()
             state = self.get_state()
-            cart_pos: float = state[self.StatesIndex.CART_POS]
-            cart_vel: float = state[self.StatesIndex.CART_VEL]
-            pend_ang: float = state[self.StatesIndex.PEND_POS]
-            pend_vel: float = state[self.StatesIndex.PEND_VEL]
+            cart_pos: float = state[self.StatesIndex.CART_POS.value]
+            cart_vel: float = state[self.StatesIndex.CART_VEL.value]
+            pend_ang: float = state[self.StatesIndex.PEND_POS.value]
+            pend_vel: float = state[self.StatesIndex.PEND_VEL.value]
             input_signal: float = actions[0]
             print(f"self.time = {self.time} cart_pos = {cart_pos} cart_vel = {cart_vel} pend_ang = {pend_ang} pend_vel = {pend_vel} input_signal = {input_signal}")
 
@@ -194,21 +195,22 @@ class AnimationInvertedPendulum(InvertedPendulum):
             line_pend_vel.set_data(self.time_data, self.pend_vel_data)
             line_input.set_data(self.time_data, self.input_data)
 
-            cart.set_xy((cart_pos-0.1, -0.1))
+            cart.set_xy((cart_pos - 0.1, -0.1))
             pendulum.set_data(x=cart_pos, y=0, dx=numpy.sin(pend_ang), dy=numpy.cos(pend_ang))
             nonlocal remaining_steps
             remaining_steps -= 1
             print(f"Remaining steps = {remaining_steps}/{steps}")
-            if remaining_steps ==0:
+            if remaining_steps == 0:
                 sys.exit()
+            ax_animation.set_xlim(cart_pos - 2, cart_pos + 2)
             return line_cart_pos, line_cart_vel, line_pend_ang, line_pend_vel, line_input, line_animation
 
         ani = animation.FuncAnimation(fig, update, frames=1, init_func=init, blit=False, interval=1)
         # Adjust layout
         plt.tight_layout()
         plt.show()
-        
+
     def _mdp_step(self):
         s = self.get_observations()
-        a = self.actor(s) * self.get_action_constraints() # todo fix this
+        a = self.actor(s) * self.get_action_constraints()  # todo fix this
         s = self.step(a)
