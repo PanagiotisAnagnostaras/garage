@@ -29,9 +29,9 @@ class Env(ABC):
     def apply_actions(self, actions: torch.Tensor) -> None:
         self.sim.setInput(actions.tolist())
 
-    def step(self, actions: torch.Tensor) -> torch.Tensor:
+    def step(self, actions: torch.Tensor, realtime: bool = False) -> torch.Tensor:
         self.apply_actions(actions=actions)
-        self.sim.simulate(False, self.step_dt)
+        self.sim.simulate(realtime, self.step_dt)
         return self.get_observations()
 
     @abstractmethod

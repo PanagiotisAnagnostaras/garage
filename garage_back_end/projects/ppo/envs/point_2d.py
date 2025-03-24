@@ -80,3 +80,6 @@ class Point2D(Env):
         max_y_vel = 10
         constraints = [max_x_pos, max_x_vel, max_y_pos, max_y_vel]
         return torch.tensor(data=constraints)
+
+class AnimationPoint2D(Point2D):
+    pass
