@@ -8,17 +8,17 @@ from datetime import datetime
 
 
 class PPO:
-    def __init__(self, env, steps_per_rollout, n_epochs_per_training_step, n_rollouts_per_training_step, lr_actor, lr_critic, epsilon) -> None:
+    def __init__(self, env, steps_per_rollout, n_epochs_per_training_step, n_rollouts_per_training_step, lr_actor, lr_critic, epsilon, prefix_saved_model) -> None:
         current_datetime = datetime.now()
         current_datetime_str = current_datetime.strftime("%Y_%m_%d_%H_%M")
         self.env: Env = env
         self._init_hyperparameters(steps_per_rollout=steps_per_rollout, n_epochs_per_training_step=n_epochs_per_training_step, n_rollouts_per_training_step=n_rollouts_per_training_step, lr_actor=lr_actor, lr_critic=lr_critic, epsilon=epsilon)
         self.actor = Actor(self.env.Dimensions.observations_dims, self.env.Dimensions.actions_dims)
         self.actor_opt = torch.optim.Adam(self.actor.parameters(), lr=self.lr_actor)
-        self.actor_saved_filename = f"/garage_back_end/projects/ppo/saved_models/{current_datetime_str}_saved_actor"
+        self.actor_saved_filename = f"/garage_back_end/projects/ppo/saved_models/{current_datetime_str}_{prefix_saved_model}_saved_actor"
         self.critic = Critic(self.env.Dimensions.observations_dims)
         self.critic_opt = torch.optim.SGD(self.critic.parameters(), lr=self.lr_critic)
-        self.critic_saved_filename = f"/garage_back_end/projects/ppo/saved_models/{current_datetime_str}_saved_critic"
+        self.critic_saved_filename = f"/garage_back_end/projects/ppo/saved_models/{current_datetime_str}_{prefix_saved_model}_saved_critic"
 
     def _init_hyperparameters(self, steps_per_rollout, n_epochs_per_training_step, n_rollouts_per_training_step, lr_actor, lr_critic, epsilon) -> None:
         self.steps_per_rollout = steps_per_rollout
@@ -55,7 +55,7 @@ class PPO:
                 actor_loss = self.update_actor(log_prob_before_buffer=log_prob_buffer, obs_buffer=obs_buffer, advantages_buffer=advantages_buffer)
                 critic_loss = self.update_critic(obs_buffer=obs_buffer, rews2go_buffer=rews2go_buffer)
                 print(f"epoch: {epoch}/{self.n_epochs_per_training_step} actor loss = {actor_loss} critic loss = {critic_loss}")
-            if step % 50 == 0:
+            if step % 10 == 0:
                 self.save(f"step_{step}_total_steps_{total_training_steps}")
             step += 1
 
