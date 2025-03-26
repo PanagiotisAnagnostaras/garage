@@ -61,21 +61,42 @@ class Point2D(Env):
         return rew
 
     def plot_rollout(self, obs: torch.Tensor):
-        fig, ax = plt.subplots(ncols=3, nrows=2)
+        fig, ax = plt.subplots(ncols=4, nrows=2)
         ax: List[List[Axes]]
+        # x - t
         ax[0][0].plot(obs[:, self.ObsIndexes.X_POS.value], label="x pos")
-        ax[0][1].plot(obs[:, self.ObsIndexes.Y_POS.value], label="y pos")
-        ax[1][0].plot(obs[:, self.ObsIndexes.X_VEL.value], label="x vel")
-        ax[1][1].plot(obs[:, self.ObsIndexes.Y_VEL.value], label="y vel")
-        ax[0][2].plot(obs[:, self.ObsIndexes.X_POS.value], obs[:, self.ObsIndexes.Y_POS.value], label="x-y")
+        ax[0][0].set_ylabel(self.ObsIndexes.X_POS.name)
         ax[0][0].legend()
+        # y - t
+        ax[0][1].plot(obs[:, self.ObsIndexes.Y_POS.value], label="y pos")
+        ax[0][1].set_ylabel(self.ObsIndexes.Y_POS.name)
         ax[0][1].legend()
+        # dot x - t
+        ax[1][0].plot(obs[:, self.ObsIndexes.X_VEL.value], label="x vel")
+        ax[1][0].set_ylabel(self.ObsIndexes.X_VEL.name)
         ax[1][0].legend()
+        # dot y - t
+        ax[1][1].plot(obs[:, self.ObsIndexes.Y_VEL.value], label="y vel")
+        ax[1][1].set_ylabel(self.ObsIndexes.Y_VEL.name)
         ax[1][1].legend()
+        # F_x - t
+        ax[0][2].plot(obs[:, self.ObsIndexes.X_FORCE.value], label="Fx")
+        ax[0][2].set_ylabel(self.ObsIndexes.X_FORCE.name)
+        ax[0][2].legend()
+        # F_y - t
+        ax[1][2].plot(obs[:, self.ObsIndexes.Y_FORCE.value], label="Fy")
+        ax[1][2].set_ylabel(self.ObsIndexes.Y_FORCE.name)
+        ax[1][2].legend()
+        # x - y 
+        ax[0][3].plot(obs[:, self.ObsIndexes.X_POS.value], obs[:, self.ObsIndexes.Y_POS.value], label="x-y")
+        ax[0][3].set_xlabel(self.ObsIndexes.X_POS.value)
+        ax[0][3].set_ylabel(self.ObsIndexes.Y_POS.value)
+        ax[0][3].legend()
+        fig.tight_layout()
         plt.show()
 
     def get_action_constraints(self) -> torch.Tensor:
-        max_applied_input = [10, 10]
+        max_applied_input = [1, 1]
         return torch.tensor(data=max_applied_input)
 
     def get_state_constraints(self) -> torch.Tensor:
@@ -210,5 +231,5 @@ class AnimationPoint2D(Point2D):
 
     def _mdp_step(self):
         s = self.get_observations()
-        a = self.actor(s) * self.get_action_constraints()  # todo fix this
+        a = 0 * self.actor(s) * self.get_action_constraints()  # todo fix this
         s = self.step(a)

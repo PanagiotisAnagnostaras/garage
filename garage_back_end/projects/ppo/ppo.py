@@ -8,11 +8,11 @@ from datetime import datetime
 
 
 class PPO:
-    def __init__(self, env, steps_per_rollout, n_epochs_per_training_step, n_rollouts_per_training_step, lr_actor, lr_critic, epsilon, prefix_saved_model) -> None:
+    def __init__(self, env, steps_per_rollout, n_epochs_per_training_step, n_rollouts_per_training_step, lr_actor, lr_critic, epsilon, prefix_saved_model, std) -> None:
         current_datetime = datetime.now()
         current_datetime_str = current_datetime.strftime("%Y_%m_%d_%H_%M")
         self.env: Env = env
-        self._init_hyperparameters(steps_per_rollout=steps_per_rollout, n_epochs_per_training_step=n_epochs_per_training_step, n_rollouts_per_training_step=n_rollouts_per_training_step, lr_actor=lr_actor, lr_critic=lr_critic, epsilon=epsilon)
+        self._init_hyperparameters(steps_per_rollout=steps_per_rollout, n_epochs_per_training_step=n_epochs_per_training_step, n_rollouts_per_training_step=n_rollouts_per_training_step, lr_actor=lr_actor, lr_critic=lr_critic, epsilon=epsilon, std=std)
         self.actor = Actor(self.env.Dimensions.observations_dims, self.env.Dimensions.actions_dims)
         self.actor_opt = torch.optim.Adam(self.actor.parameters(), lr=self.lr_actor)
         self.actor_saved_filename = f"/garage_back_end/projects/ppo/saved_models/{current_datetime_str}_{prefix_saved_model}_saved_actor"
@@ -20,7 +20,7 @@ class PPO:
         self.critic_opt = torch.optim.SGD(self.critic.parameters(), lr=self.lr_critic)
         self.critic_saved_filename = f"/garage_back_end/projects/ppo/saved_models/{current_datetime_str}_{prefix_saved_model}_saved_critic"
 
-    def _init_hyperparameters(self, steps_per_rollout, n_epochs_per_training_step, n_rollouts_per_training_step, lr_actor, lr_critic, epsilon) -> None:
+    def _init_hyperparameters(self, steps_per_rollout, n_epochs_per_training_step, n_rollouts_per_training_step, lr_actor, lr_critic, epsilon, std) -> None:
         self.steps_per_rollout = steps_per_rollout
         self.gamma = 0.95
         self.lambd = 0.5
@@ -29,7 +29,7 @@ class PPO:
         self.epsilon = epsilon
         self.lr_actor = lr_actor
         self.lr_critic = lr_critic
-        cov_var = torch.full(size=(self.env.Dimensions.actions_dims,), fill_value=5.0)
+        cov_var = torch.full(size=(self.env.Dimensions.actions_dims,), fill_value=std**2)
         self.cov_mat = torch.diag(cov_var)
 
     def train(self, total_training_steps):
@@ -43,7 +43,7 @@ class PPO:
             for rollout in range(self.n_rollouts_per_training_step):
                 # print(f"rollout {rollout+1}/{self.n_rollouts_per_training_step}")
                 obs, acts, rews, log_prob = self.rollout()
-                # plot_rollout(obs)
+                self.env.plot_rollout(obs)
                 obs_buffer[rollout, :, :] = obs
                 acts_buffer[rollout, :, :] = acts
                 rews_buffer[rollout, :, :] = rews.unsqueeze(-1)
