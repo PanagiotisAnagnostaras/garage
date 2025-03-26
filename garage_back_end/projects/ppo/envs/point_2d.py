@@ -231,5 +231,5 @@ class AnimationPoint2D(Point2D):
 
     def _mdp_step(self):
         s = self.get_observations()
-        a = 0 * self.actor(s) * self.get_action_constraints()  # todo fix this
+        a = self.actor(s) * self.get_action_constraints()  # todo fix this
         s = self.step(a)
