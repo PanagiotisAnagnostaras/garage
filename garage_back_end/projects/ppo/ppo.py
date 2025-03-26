@@ -43,7 +43,7 @@ class PPO:
             for rollout in range(self.n_rollouts_per_training_step):
                 # print(f"rollout {rollout+1}/{self.n_rollouts_per_training_step}")
                 obs, acts, rews, log_prob = self.rollout()
-                self.env.plot_rollout(obs)
+                # self.env.plot_rollout(obs)
                 obs_buffer[rollout, :, :] = obs
                 acts_buffer[rollout, :, :] = acts
                 rews_buffer[rollout, :, :] = rews.unsqueeze(-1)
@@ -123,7 +123,7 @@ class PPO:
         return self.critic(obs)
 
     def compute_actions(self, obs: torch.Tensor) -> torch.Tensor:
-        mean = self.actor(obs) * self.env.get_action_constraints()
+        mean =  self.actor(obs) * self.env.get_action_constraints()
         dist = MultivariateNormal(mean, self.cov_mat)
         action = dist.sample()
         # print(f"mean={mean} actions={action}")
@@ -131,8 +131,12 @@ class PPO:
         return action, log_prob
 
     def save(self, suffix: str) -> None:
-        torch.save(self.actor, self.actor_saved_filename + f"_{suffix}.pth")
-        torch.save(self.critic, self.critic_saved_filename + f"_{suffix}.pth")
+        actor_path = self.actor_saved_filename + f"_{suffix}.pth"
+        critic_path = self.critic_saved_filename + f"_{suffix}.pth"
+        torch.save(self.actor, actor_path)
+        torch.save(self.critic, critic_path)
+        print(f"saved actor at {actor_path}")
+        print(f"saved critic at {critic_path}")
 
     def randomize_initial_state(self) -> None:
         random_state = 2 * (torch.rand(size=(self.env.Dimensions.states_dims,)) - 0.5) * self.env.get_state_constraints()

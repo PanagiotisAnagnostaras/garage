@@ -96,7 +96,7 @@ class Point2D(Env):
         plt.show()
 
     def get_action_constraints(self) -> torch.Tensor:
-        max_applied_input = [1, 1]
+        max_applied_input = [0.1, 0.1]
         return torch.tensor(data=max_applied_input)
 
     def get_state_constraints(self) -> torch.Tensor:

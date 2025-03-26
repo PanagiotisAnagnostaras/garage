@@ -4,7 +4,7 @@ from envs.point_2d import AnimationPoint2D
 import torch
 
 if __name__ == "__main__":
-    actor_model_path = "/garage_back_end/projects/ppo/saved_models/2025_03_24_21_09_point_2d_saved_critic_step_10_total_steps_1000.pth"
+    actor_model_path = "/garage_back_end/projects/ppo/saved_models/2025_03_26_20_04_point_2d_saved_actor_step_430_total_steps_1000.pth"
     anim = AnimationPoint2D(actor_model_path=actor_model_path)
     initial_state = torch.tensor([0.5, 0.0, 0.5, 0.0])
     steps = 10000
