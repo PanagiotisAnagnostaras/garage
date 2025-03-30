@@ -1,6 +1,6 @@
 ## Brief
-Repo containing the code of the simulator_core simulator.
-The goal of this project is to develop a complete application for simulating and controlling an simulator_core.
+Repo containing the code of the garage.
+The goal of this project is to develop a complete application for training a RL-PPO policy on a physics simulator.
 
 ## Overview
 The project consists of 2 containers.
@@ -25,8 +25,3 @@ The project consists of 2 containers.
     - *also runs `xhost local:root`*
 - Access the front end of the garage
     - Open a browser and head to [local](http://localhost:3000/)
-
-## Next steps
-- Use `Eigen` instead of custom types for the simulation
-- Implement MPC controller
-- Use the `python`-`C++` communication provided by `Pybind11` for developing learning based controllers.
