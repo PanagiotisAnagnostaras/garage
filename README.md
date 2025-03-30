@@ -1,6 +1,6 @@
 ## Brief
-Repo containing the code of the inverted-pendulum simulator.
-The goal of this project is to develop a complete application for simulating and controlling an inverted-pendulum.
+Repo containing the code of the simulator_core simulator.
+The goal of this project is to develop a complete application for simulating and controlling an simulator_core.
 
 ## Overview
 The project consists of 2 containers.

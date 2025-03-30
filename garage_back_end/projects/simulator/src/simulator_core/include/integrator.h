@@ -9,9 +9,11 @@
 #include <memory>
 
 namespace integrator {
+enum solverType { EXPLICIT_EULER = 0 };
+
 class I_NumericalIntegrator {
  public:
-  I_NumericalIntegrator(float timestep_s_) : timestep_s_(timestep_s_) {};
+  I_NumericalIntegrator(float timestep_s_);
   [[nodiscard]] virtual Vf step(const Vf &f, const Vf &x) const = 0;
 
  protected:
@@ -20,7 +22,7 @@ class I_NumericalIntegrator {
 
 class ExplicitEuler : public I_NumericalIntegrator {
  public:
-  ExplicitEuler(float timestep_s_) : I_NumericalIntegrator(timestep_s_) {};
+  ExplicitEuler(float timestep_s_);
   Vf step(const Vf &f, const Vf &x) const override;
 };
 

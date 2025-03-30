@@ -1,4 +1,4 @@
-Metadata-Version: 2.1
+Metadata-Version: 2.2
 Name: binder
 Version: 0.0.1
 Summary: A test project using pybind11 and CMake
@@ -7,3 +7,8 @@ Author-email: dean0x7d@gmail.com
 Requires-Python: >=3.7
 Provides-Extra: test
 Requires-Dist: pytest>=6.0; extra == "test"
+Dynamic: author
+Dynamic: author-email
+Dynamic: provides-extra
+Dynamic: requires-python
+Dynamic: summary

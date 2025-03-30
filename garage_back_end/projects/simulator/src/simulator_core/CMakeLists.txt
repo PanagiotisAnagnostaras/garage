@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.0)
-project(inverted-pendulum)
+project(simulator_core)
 
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 17)
@@ -7,10 +7,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Source files
 set(SOURCES
-    src/simulation.cpp
-    src/physics_sim.cpp
     src/integrator.cpp
-    src/controller.cpp
+    src/linear_algebra.cpp
+    src/simulation.cpp
+    src/systems.cpp
 )
 
 set(TESTS

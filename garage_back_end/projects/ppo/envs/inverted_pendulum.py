@@ -1,16 +1,93 @@
-from binder import SimulationFacade
+import torch
+from enum import Enum
+from typing import Union
+from envs.env import Env
 from matplotlib import pyplot as plt
-from matplotlib import patches
+from matplotlib.axes import Axes
 from typing import List
+from matplotlib import patches
 import matplotlib.animation as animation
 import numpy
-import matplotlib
 import sys
+import matplotlib
+from networks import Actor
 
-class SimulationPy:
+# todo:
+# - wrap circle to [0,2pi]
+
+
+class InvertedPendulum(Env):
+    class ObsIndexes(Enum):
+        CART_VEL = 0
+        PEND_POS = 1
+        PEND_VEL = 2
+        PREV_ACT = 3
+
+    class StatesIndex(Enum):
+        CART_POS = 0
+        CART_VEL = 1
+        PEND_POS = 2
+        PEND_VEL = 3
+
+    class Dimensions:
+        actions_dims = 1
+        observations_dims = 4
+        states_dims = 4
+
     def __init__(self) -> None:
-        self._sim = SimulationFacade()
-        self._sim.setSystemInvertedPendulum()
+        super().__init__()
+        self.sim.setSystemInvertedPendulum()
+
+    def get_observations(self) -> torch.Tensor:
+        obs = torch.zeros(size=(self.Dimensions.observations_dims,))
+        state = self.get_state()
+        actions = self.get_actions()
+        obs[self.ObsIndexes.CART_VEL.value] = state[self.StatesIndex.CART_VEL.value]
+        obs[self.ObsIndexes.PEND_POS.value] = state[self.StatesIndex.PEND_POS.value]
+        obs[self.ObsIndexes.PEND_VEL.value] = state[self.StatesIndex.PEND_VEL.value]
+        obs[self.ObsIndexes.PREV_ACT.value] = actions[0]
+        return obs
+
+    def get_reward(self, observations: torch.Tensor, actions: torch.Tensor) -> torch.Tensor:
+        rew = torch.tensor(data=0, dtype=torch.float)
+        assert 0 <= observations[self.ObsIndexes.PEND_POS.value] < 2 * torch.pi, f"Angle must be in [0, 2pi). Got {observations[self.ObsIndexes.PEND_POS.value]}"
+        if observations[self.ObsIndexes.PEND_POS.value] <= torch.pi:
+            rew += torch.exp(-((observations[self.ObsIndexes.PEND_POS.value]) ** 2) / 1)
+        else:
+            rew += torch.exp(-((2 * torch.pi - observations[self.ObsIndexes.PEND_POS.value]) ** 2) / 1)
+        rew += 0.1 * torch.exp(-((observations[self.ObsIndexes.PREV_ACT.value]) ** 2) / 1)
+        return rew
+
+    def plot_rollout(self, obs: torch.Tensor):
+        fig, ax = plt.subplots(ncols=2, nrows=2)
+        ax: List[List[Axes]]
+        ax[0][0].plot(obs[:, self.ObsIndexes.CART_VEL.value], label="cart vel")
+        ax[0][1].plot(obs[:, self.ObsIndexes.PEND_POS.value], label="pend pos")
+        ax[1][0].plot(obs[:, self.ObsIndexes.PEND_VEL.value], label="pend vel")
+        ax[1][1].plot(obs[:, self.ObsIndexes.PREV_ACT.value], label="prev act")
+        ax[0][0].legend()
+        ax[0][1].legend()
+        ax[1][0].legend()
+        ax[1][1].legend()
+        plt.show()
+
+    def get_action_constraints(self) -> torch.Tensor:
+        max_applied_input = [100]
+        return torch.tensor(data=max_applied_input)
+
+    def get_state_constraints(self) -> torch.Tensor:
+        max_cart_pos = 1
+        max_cart_vel = 0
+        max_pend_pos = 1
+        max_pend_vel = 0
+        constraints = [max_cart_pos, max_cart_vel, max_pend_pos, max_pend_vel]
+        return torch.tensor(data=constraints)
+
+
+class AnimationInvertedPendulum(InvertedPendulum):
+    def __init__(self, actor_model_path) -> None:
+        super().__init__()
+        matplotlib.use("TkAgg")
         self.time_data = []
         self.cart_pos_data = []
         self.cart_vel_data = []
@@ -19,9 +96,12 @@ class SimulationPy:
         self.input_data = []
         self.time = 0
         self.plot_period_s = 0.1
+        actor = Actor(obs_dim=self.Dimensions.observations_dims, act_dim=self.Dimensions.actions_dims)
+        actor = torch.load(actor_model_path, weights_only=False)
+        self.actor = actor
 
-    def run(self, steps: int):
-        self._sim.setState([0.0, 0.0, 1.0, 0.0])
+    def animate(self, steps: int, x0: torch.tensor):
+        self.set_state(x0)
         remaining_steps = steps
         fig, ax = plt.subplots(ncols=3, nrows=2)
         ax: List[List[plt.Axes]]
@@ -66,7 +146,7 @@ class SimulationPy:
         ax_animation.set_ylabel("y")
 
         cart = patches.Rectangle((0, 0), 0.2, 0.1, linewidth=2, edgecolor="r", facecolor="none")
-        pendulum = patches.FancyArrow(0, 0, 0.0, 1.0, head_width=0.0,head_length=0.0, linewidth=2, edgecolor="g")
+        pendulum = patches.FancyArrow(0, 0, 0.0, 1.0, head_width=0.0, head_length=0.0, linewidth=2, edgecolor="g")
 
         ax_animation.add_patch(cart)
         ax_animation.add_patch(pendulum)
@@ -81,7 +161,6 @@ class SimulationPy:
             ax_cart_vel.set_xlim(0, 10)
             ax_pend_ang.set_xlim(0, 10)
             ax_pend_vel.set_xlim(0, 10)
-            ax_animation.set_xlim(-2, 2)
             ax_input.set_xlim(0, 10)
             ax_cart_pos.set_ylim(-5, 10)
             ax_cart_vel.set_ylim(-5, 10)
@@ -92,16 +171,15 @@ class SimulationPy:
             return line_cart_pos, line_cart_vel, line_pend_ang, line_pend_vel, line_input, line_animation
 
         def update(frame):
-            print(f"before")
-            self._sim.simulate(True, self.plot_period_s)
-            print(f"after")
-            self.time += self._sim.getTime()
-            state = self._sim.getState()
-            cart_pos: float = state[0]
-            cart_vel: float = state[1]
-            pend_ang: float = state[2]
-            pend_vel: float = state[3]
-            input_signal: float = self._sim.getInput()[0]
+            self._mdp_step()
+            actions = self.get_actions()
+            self.time += self.get_time()
+            state = self.get_state()
+            cart_pos: float = state[self.StatesIndex.CART_POS.value]
+            cart_vel: float = state[self.StatesIndex.CART_VEL.value]
+            pend_ang: float = state[self.StatesIndex.PEND_POS.value]
+            pend_vel: float = state[self.StatesIndex.PEND_VEL.value]
+            input_signal: float = actions[0]
             print(f"self.time = {self.time} cart_pos = {cart_pos} cart_vel = {cart_vel} pend_ang = {pend_ang} pend_vel = {pend_vel} input_signal = {input_signal}")
 
             self.time_data.append(self.time)
@@ -117,13 +195,14 @@ class SimulationPy:
             line_pend_vel.set_data(self.time_data, self.pend_vel_data)
             line_input.set_data(self.time_data, self.input_data)
 
-            cart.set_xy((cart_pos-0.1, -0.1))
+            cart.set_xy((cart_pos - 0.1, -0.1))
             pendulum.set_data(x=cart_pos, y=0, dx=numpy.sin(pend_ang), dy=numpy.cos(pend_ang))
             nonlocal remaining_steps
             remaining_steps -= 1
             print(f"Remaining steps = {remaining_steps}/{steps}")
-            if remaining_steps ==0:
+            if remaining_steps == 0:
                 sys.exit()
+            ax_animation.set_xlim(cart_pos - 2, cart_pos + 2)
             return line_cart_pos, line_cart_vel, line_pend_ang, line_pend_vel, line_input, line_animation
 
         ani = animation.FuncAnimation(fig, update, frames=1, init_func=init, blit=False, interval=1)
@@ -131,10 +210,7 @@ class SimulationPy:
         plt.tight_layout()
         plt.show()
 
-def run_simulation(steps: int):
-    sim_py = SimulationPy()
-    sim_py.run(steps)
-    
-if __name__ == "__main__":
-    matplotlib.use('TkAgg')
-    run_simulation(10000)
+    def _mdp_step(self):
+        s = self.get_observations()
+        a = self.actor(s) * self.get_action_constraints()  # todo fix this
+        s = self.step(a)

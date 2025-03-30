@@ -7,5 +7,5 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 include_directories(external/pybind11/include)
 add_subdirectory(external/pybind11)
-add_subdirectory(src/inverted-pendulum)
+add_subdirectory(src/simulator_core)
 add_subdirectory(src/binder)
