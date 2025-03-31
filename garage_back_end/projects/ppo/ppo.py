@@ -94,11 +94,14 @@ class PPO:
             delta = rews_buffer[:, step, :] + self.gamma * self.read_value_function(next_observation) - self.read_value_function(observation)  # to check again
             advantage = delta # + (self.gamma * self.lambd) * advantages[:, 0, :] if len(advantages) != 0 else delta
             advantage = advantage.unsqueeze(1)
+            # normalize advantages
+            mean = torch.mean(advantage)
+            std = torch.std(advantage)
+            advantage = (advantage - mean) / std
             advantages = torch.cat((advantage, advantages), dim=1) if advantages.nelement() != 0 else advantage
             rew2go = rews_buffer[:, step, :] + self.gamma * (rews2go[:, 0, :]) if len(rews2go) != 0 else rews_buffer[:, step, :] + self.gamma * self.read_value_function(next_observation)
             rew2go = rew2go.unsqueeze(1)
             rews2go = torch.cat((rew2go, rews2go), dim=1) if rews2go.nelement() != 0 else rew2go
-        # normalize advantage to do
         return advantages, rews2go
 
     def update_actor(self, log_prob_before_buffer: torch.Tensor, obs_buffer: torch.Tensor, advantages_buffer: torch.Tensor, acts_buffer: torch.Tensor) -> None:
@@ -111,7 +114,6 @@ class PPO:
                 ratio = torch.exp(log_prob - log_prob_before_buffer[traj, step].detach())
                 # print(f"ratio={ratio}")
                 advantage = advantages_buffer[traj, step].squeeze().detach()
-                # print(f"advantage={advantage}")
                 if advantages_buffer[traj, step, 0] >=0 :
                     g = (1+self.epsilon)*advantages_buffer[traj, step, 0].detach()
                 else:
