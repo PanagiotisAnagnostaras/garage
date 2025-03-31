@@ -71,7 +71,7 @@ class PPO:
         # print("---------------")
         # print(f"s = {s}")
         for step in range(self.steps_per_trajectory):
-            a, log_prob = self.compute_actions_inference(s)
+            a, log_prob = self.compute_actions_sample(s)
             # print(f"a = {a} log_prob = {log_prob}")
             s = self.env.step(a)
             # print(f"s = {s}")
@@ -102,13 +102,16 @@ class PPO:
         return advantages, rews2go
 
     def update_actor(self, log_prob_before_buffer: torch.Tensor, obs_buffer: torch.Tensor, advantages_buffer: torch.Tensor, acts_buffer: torch.Tensor) -> None:
-        self.update_dist(obs_buffer)
-        log_prob = self.compute_log_prob(acts_buffer)
         loss = 0
         for traj in range(self.n_trajectories_per_training_step):
             for step in range(self.steps_per_trajectory):
-                ratio = torch.exp(log_prob[traj, step] - log_prob_before_buffer[traj, step].detach().squeeze())
+                action = acts_buffer[traj, step, :]
+                observation = obs_buffer[traj, step, :]
+                log_prob = self.compute_log_prob(action, observation)
+                ratio = torch.exp(log_prob - log_prob_before_buffer[traj, step].detach())
+                # print(f"ratio={ratio}")
                 advantage = advantages_buffer[traj, step].squeeze().detach()
+                # print(f"advantage={advantage}")
                 if advantages_buffer[traj, step, 0] >=0 :
                     g = (1+self.epsilon)*advantages_buffer[traj, step, 0].detach()
                 else:
@@ -116,8 +119,9 @@ class PPO:
                 loss += torch.min(ratio*advantage, g)
         self.actor_opt.zero_grad()
         (-loss).backward()
+        # print(self.actor_opt.param_groups[0]['params'][0].grad)
         self.actor_opt.step()
-                    
+        # print(f"loss = {loss}")
         return loss.item()
 
     def update_critic(self, obs_buffer: torch.Tensor, rews2go_buffer: torch.Tensor) -> None:
@@ -131,16 +135,20 @@ class PPO:
     def read_value_function(self, obs: torch.Tensor) -> float:
         return self.critic(obs)
 
-    def update_dist(self, obs: torch.Tensor) -> torch.Tensor:
-        mean =  self.actor(obs) * self.env.get_action_constraints()
-        self.policy_dist = MultivariateNormal(mean, self.cov_mat)
-
     def compute_actions_inference(self, obs: torch.Tensor) -> torch.Tensor:
         actions =  self.actor(obs) * self.env.get_action_constraints()
-        return actions, self.compute_log_prob(actions)
+        return actions
     
-    def compute_log_prob(self, actions: torch.Tensor) -> torch.Tensor:
-        return self.policy_dist.log_prob(actions)
+    def compute_actions_sample(self, obs: torch.Tensor) -> torch.Tensor:
+        mean =  self.actor(obs) * self.env.get_action_constraints()
+        policy_dist = MultivariateNormal(mean, self.cov_mat)
+        actions = policy_dist.sample()
+        return actions, policy_dist.log_prob(actions)
+    
+    def compute_log_prob(self, actions: torch.Tensor, observation: torch.Tensor) -> torch.Tensor:
+        mean =  self.actor(observation) * self.env.get_action_constraints()
+        policy_dist = MultivariateNormal(mean, self.cov_mat)
+        return policy_dist.log_prob(actions)
 
     def save(self, suffix: str) -> None:
         actor_path = self.actor_saved_filename + f"_{suffix}.pth"
